@@ -189,7 +189,10 @@ sVimTab.commands = {
 
   // Enter normal mode
   normalMode: function() {
-    document.activeElement.blur();
+    var element = document.activeElement;
+    if (element != null) {
+      element.blur();
+    }
     sVimTab.mode = "normal";
   },
 
@@ -238,7 +241,7 @@ sVimTab.stopPropagation = function() {
   return function(e) {
     var element = document.activeElement;
     if (sVimTab.mode == "normal" && e.keyCode != 27
-        && !(element.tagName == "INPUT" || element.tagName == "SELECT" || element.tagName == "TEXTAREA" || (element.contentEditable && element.contentEditable == "true"))) {
+        && !(element != null && (element.tagName == "INPUT" || element.tagName == "SELECT" || element.tagName == "TEXTAREA" || (element.contentEditable && element.contentEditable == "true")))) {
       e.stopPropagation();
     }
   };
@@ -250,7 +253,7 @@ sVimTab.runCommand = function(command) {
     var element = document.activeElement;
     // Only run command if in normal mode or command is normalMode, and if active element is not insert mode of a vim editor
     if ((sVimTab.mode == "normal" || command == "normalMode") &&
-      !(element.parentNode.className.indexOf("ace_editor") != -1 && element.parentNode.className.indexOf("insert-mode") != -1)) {
+      !(element != null && element.parentNode.className.indexOf("ace_editor") != -1 && element.parentNode.className.indexOf("insert-mode") != -1)) {
       // FIXX WHEN ":" implemented
       sVimTab.commands[command]();
       return command == "normalMode";
