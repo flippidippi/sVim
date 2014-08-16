@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Author</key>
+	<string>Phillip Lanclos</string>
+	<key>Builder Version</key>
+	<string>9537.77.4</string>
+	<key>CFBundleDisplayName</key>
+	<string>sVim</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.flipxfx.svim</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0</string>
+	<key>CFBundleVersion</key>
+	<string>1.0.0</string>
+	<key>Chrome</key>
+	<dict>
+		<key>Database Quota</key>
+		<real>104857600</real>
+		<key>Global Page</key>
+		<string>sVimGlobal.html</string>
+	</dict>
+	<key>Content</key>
+	<dict>
+		<key>Scripts</key>
+		<dict>
+			<key>End</key>
+			<array>
+				<string>sVimTab.js</string>
+			</array>
+			<key>Start</key>
+			<array>
+				<string>mousetrap.js</string>
+				<string>sVimHint.js</string>
+			</array>
+		</dict>
+	</dict>
+	<key>Description</key>
+	<string>Vim shortcuts in Safari</string>
+	<key>ExtensionInfoDictionaryVersion</key>
+	<string>1.0</string>
+	<key>Permissions</key>
+	<dict>
+		<key>Website Access</key>
+		<dict>
+			<key>Include Secure Pages</key>
+			<true/>
+			<key>Level</key>
+			<string>All</string>
+		</dict>
+	</dict>
+	<key>Update Manifest URL</key>
+	<string>http://github.com/flipxfx/sVim/raw/master/manifest.plist</string>
+	<key>Website</key>
+	<string>http://flipxfx.com</string>
+</dict>
+</plist>

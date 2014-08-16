@@ -1,0 +1,466 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>sVimGlobal</title>
+    <script>
+      // Create global object
+      var sVimGlobal = {};
+      // Array of previously closed tabs
+      sVimGlobal.closedTabs = [];
+      // Set path to sVimrc.html
+      sVimGlobal.sVimrcPageUrl = safari.extension.baseURI + "sVimrc.html"
+      // Define commands that can be run
+      sVimGlobal.commands = {
+        // Next tab
+        nextTab: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          var tabs = safari.application.activeBrowserWindow.tabs;
+
+          var i = tabs.indexOf(tab) + 1;
+          if (!tabs[i]) {
+            i = 0;
+          }
+          tabs[i].activate();
+        },
+
+        // Previous tab
+        previousTab: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          var tabs = safari.application.activeBrowserWindow.tabs;
+
+          var i = tabs.indexOf(tab) - 1;
+          if (!tabs[i]) {
+            i = tabs.length - 1;
+          }
+          tabs[i].activate();
+        },
+
+        // Go to the first tab
+        firstTab: function() {
+          safari.application.activeBrowserWindow.tabs[0].activate();
+        },
+
+        // Go to the last tab
+        lastTab: function() {
+          safari.application.activeBrowserWindow.tabs[tabs.length - 1].activate();
+        },
+
+        // Move tab left
+        moveTabLeft: function() {
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          var tab = safari.application.activeBrowserWindow.activeTab;
+
+          var i = tabs.indexOf(tab) - 1;
+          if (!tabs[i]) {
+            i = tabs.length;
+          }
+          safari.application.activeBrowserWindow.insertTab(tab, i);
+        },
+
+        // Move tab right
+        moveTabRight: function() {
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          var tab = safari.application.activeBrowserWindow.activeTab;
+
+          var i = tabs.indexOf(tab) + 2;
+          if (!tabs[i - 1]) {
+            i = 0;
+          }
+          safari.application.activeBrowserWindow.insertTab(tab, i);
+        },
+
+        // New tab
+        newTab: function(url) {
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          if (typeof url === "undefined") url = sVimGlobal.settings.newtaburl;
+
+          var newTab = safari.application.activeBrowserWindow.openTab("foreground", tabs.indexOf(tab) + 1);
+          newTab.url = sVimGlobal.settings.newtaburl;
+        },
+
+        // New tab in the background
+        newTabBackground: function(url) {
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          if (typeof url === "undefined") url = sVimGlobal.settings.newtaburl;
+
+          var newTab = safari.application.activeBrowserWindow.openTab("background", tabs.indexOf(tab) + 1);
+          newTab.url = sVimGlobal.settings.newtaburl;
+        },
+
+        // Reopen closed tab
+        reopenTab: function() {
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          var tab = safari.application.activeBrowserWindow.activeTab;
+
+          if (sVimGlobal.closedTabs.length > 0) {
+            var newTab = safari.application.activeBrowserWindow.openTab("foreground", tabs.indexOf(tab) + 1);
+            newTab.url = sVimGlobal.closedTabs.pop();
+            setTimeout(function() { newTab.activate(); }, 100 );
+          }
+        },
+
+        // Reopen closed tab in background
+        reopenTabBackground: function() {
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          var tab = safari.application.activeBrowserWindow.activeTab;
+
+          if (sVimGlobal.closedTabs.length > 0) {
+            var newTab = safari.application.activeBrowserWindow.openTab("background", tabs.indexOf(tab) + 1);
+            newTab.url = sVimGlobal.closedTabs.pop();
+            setTimeout(function() { newTab.activate(); }, 100 );
+          }
+        },
+
+        // Close tab
+        quit: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          sVimGlobal.closedTabs.push(tab.url);
+          tab.close();
+        },
+
+        // Close tab to the left
+        closeTabLeft: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          var tabs = safari.application.activeBrowserWindow.tabs;
+
+          var i = tabs.indexOf(tab) - 1;
+          if (!tabs[i]) {
+            i = tabs.length - 1;
+          }
+          tabs[i].close();
+        },
+
+        // Close tab to the right
+        closeTabRight: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          var tabs = safari.application.activeBrowserWindow.tabs;
+
+          var i = tabs.indexOf(tab) + 1;
+          if (!tabs[i]) {
+            i = 0;
+          }
+          tabs[i].close();
+        },
+
+        // Close tabs to the left
+        closeTabsToLeft: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          var tabs = safari.application.activeBrowserWindow.tabs;
+
+          for (var j = 0; j < tabs.indexOf(tab); j++) {
+            tabs[j].close();
+          }
+        },
+
+        // Close tabs to the right
+        closeTabsToRight: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          var tabs = safari.application.activeBrowserWindow.tabs;
+
+          for (var j = tabs.length - 1; j > tabs.indexOf(tab); j--) {
+            tabs[j].close();
+          }
+        },
+
+        // Load settings from default/custom
+        loadSettings: function() {
+          sVimGlobal.loadDefaultSettings();
+          sVimGlobal.loadCustomSettings();
+        },
+
+        // Send settings to tab
+        sendSettings: function(tab) {
+          tab.page.dispatchMessage("settings", sVimGlobal.settings);
+        },
+
+        // Show sVimrc page
+        showsVimrc: function() {
+          // Go to an open sVimrc tab
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          for (var i = 0; i < tabs.length; i++) {
+            if (tabs[i].url == sVimGlobal.sVimrcPageUrl) {
+              tabs[i].activate();
+              return;
+            }
+          }
+
+          // If not tab is open with sVimrc then open a new tab
+          var newTab = safari.application.activeBrowserWindow.openTab();
+          newTab.url = sVimGlobal.sVimrcPageUrl;
+        },
+
+        // Load sVimrc
+        loadsVimrc: function() {
+          sVimGlobal.sVimrc = {};
+
+          // Load sVimrc from extension settings
+          sVimGlobal.sVimrc.rc = safari.extension.settings.rc;
+          sVimGlobal.sVimrc.rcGistId = safari.extension.settings.rcGistId;
+          sVimGlobal.sVimrc.css = safari.extension.settings.css;
+          sVimGlobal.sVimrc.cssGistId = safari.extension.settings.cssGistId;
+
+          // Load default css for the first time
+          if (sVimGlobal.sVimrc.css == undefined) {
+            var sVimcss = new XMLHttpRequest();
+            sVimcss.onreadystatechange = function () {
+              if (sVimcss.readyState == 4) {
+                if (sVimcss.status == 200 || sVimcss.status == 0) {
+                  sVimGlobal.sVimrc.css = sVimcss.responseText.trim();
+                }
+              }
+            }
+            sVimcss.open("GET", "sVim.css", false);
+            sVimcss.send();
+          }
+        },
+
+        // Send sVimrc to tab
+        sendsVimrc: function(tab) {
+          tab.page.dispatchMessage("sVimrc", sVimGlobal.sVimrc);
+        },
+
+        // Save sVimrc
+        savesVimrc: function(sVimrc) {
+          // Save values into Safari settings
+          safari.extension.settings.rc = sVimrc.rc;
+          safari.extension.settings.rcGistId = sVimrc.rcGistId;
+          safari.extension.settings.css = sVimrc.css;
+          safari.extension.settings.cssGistId = sVimrc.cssGistId;
+
+          // Reload sVimrc variable after save to repopulate
+          sVimGlobal.commands.loadsVimrc();
+
+          // Reload settings from updated sVimrc
+          sVimGlobal.commands.loadSettings();
+
+          // Send updated settings to each tab
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          for (var i = 0; i < tabs.length; i++) {
+            if (tabs[i].url != sVimGlobal.sVimrcPageUrl) {
+              sVimGlobal.commands["sendSettings"](tabs[i]);
+            }
+          }
+        }
+      };
+
+      // Loads default settings
+      sVimGlobal.loadDefaultSettings = function() {
+        sVimGlobal.settings = {};
+
+        // Load default settings
+        sVimGlobal.settings.scrollstep            = 60;
+        sVimGlobal.settings.fullpagescrollpercent = 85;
+        sVimGlobal.settings.scrollduration        = 30;
+        sVimGlobal.settings.smoothscroll          = true;
+        sVimGlobal.settings.zoomstep              = 10;
+        sVimGlobal.settings.hintcharacters        = "asdfgqwertzxcvb";
+        sVimGlobal.settings.newtaburl             = "topsites://";
+        sVimGlobal.settings.mapleader             = "\\";
+        sVimGlobal.settings.blacklists             = [];
+
+        // Load default shortcuts
+        sVimGlobal.settings.shortcuts = {
+          "j"           : "scrollDown",
+          "s"           : "scrollDown",
+          "k"           : "scrollUp",
+          "w"           : "scrollUp",
+          "h"           : "scrollLeft",
+          "l"           : "scrollRight",
+          "d"           : "scrollPageDown",
+          "e"           : "scrollPageUp",
+          "u"           : "scrollPageUp",
+          "shift+d"     : "scrollFullPageDown",
+          "shift+e"     : "scrollFullPageUp",
+          "0"           : "scrollToLeft",
+          "$"           : "scrollToRight",
+          "g g"         : "scrollToTop",
+          "shift+g"     : "scrollToBottom",
+          "r"           : "reloadTab",
+          "g i"         : "goToInput",
+          "t"           : "newTab",
+          "x"           : "quit",
+          "g x shift+t" : "closeTabLeft",
+          "g x t"       : "closeTabRight",
+          "g x 0"       : "closeTabsToLeft",
+          "g x $"       : "closeTabsToRight",
+          "shift+x"     : "reopenTab",
+          "g t"         : "nextTab",
+          "shift+k"     : "nextTab",
+          "g shift+t"   : "previousTab",
+          "shift+j"     : "previousTab",
+          "g 0"         : "firstTab",
+          "g $"         : "lastTab",
+          "shift+,"     : "moveTabLeft",
+          "shift+."     : "moveTabRight",
+          "shift+h"     : "historyBack",
+          "shift+l"     : "historyForward",
+          "z i"          : "zoomPageIn",
+          "z o"          : "zoomPageOut",
+          "z 0"          : "zoomOrig",
+          "f"           : "linkHints",
+          "shift+f"     : "linkHintsNewTab",
+          "escape"      : "normalMode",
+          "ctrl+["      : "normalMode",
+          "i"           : "insertMode",
+          "g v"         : "showsVimrc",
+        };
+      };
+
+      // Loads custom settings
+      sVimGlobal.loadCustomSettings = function() {
+        // Get an array of lines in the rc
+        var lines = sVimGlobal.sVimrc.rc.split('\n');
+
+        // Loop through each line and set settings accordingly
+        for (var i = 0; i < lines.length; i++) {
+          // Get current line
+          var line = lines[i].trim();
+          // Ignore comment/blank lines
+          if (line[0] == '"' || line[0] == '' || line[0] == null) {
+            continue;
+          }
+          // Load the setting and if not successful then stop loop, load defaults
+          else if (!sVimGlobal.loadSetting(line)) {
+            console.log("sVim - Unable to load sVimrc due to error at: '" + line);
+            sVimGlobal.loadDefaultSettings();
+            break;
+          }
+        }
+      };
+
+      // Loads a single setting
+      sVimGlobal.loadSetting = function(line) {
+        // Indicates if loading this setting is successful
+        var successful = false;
+
+        // Switch on line type (let, set, map, etc.)
+        try {
+          switch (line.split(' ')[0].trim()) {
+            case "set":
+              // Capture the setting name and if it has "no" at the beginning
+              var match = /^set\s+(no)?([a-z]+)$/.exec(line);
+              if (match) {
+                var no = match[1];
+                var setting = match[2];
+                // Set/unset setting if found and is boolean type
+                if (sVimGlobal.settings[setting] != undefined && typeof sVimGlobal.settings[setting] == "boolean") {
+                  sVimGlobal.settings[setting] = (no == undefined);
+                  successful = true;
+                }
+              }
+            break;
+
+            case "let":
+              // Capture the setting (part 1 and 2) with the value to be set to
+              var match = /^let\s+([a-z]+)\s*([a-z]*)\s*=\s*(\S.*)$/.exec(line);
+              if (match) {
+                var setting = match[1];
+                var settingOption = match[2];
+                var value = JSON.parse(match[3].trim());
+                // Set the setting according to the setting type (array, number, string, object etc.)
+                if (sVimGlobal.settings[setting] != undefined) {
+                  switch (typeof sVimGlobal.settings[setting]) {
+                    // Number
+                    case "number":
+                      if (typeof value == "number") {
+                        sVimGlobal.settings[setting] = value;
+                        successful = true;
+                      }
+                    break;
+
+                    // String
+                    case "string":
+                      if (typeof value == "string") {
+                        sVimGlobal.settings[setting] = value;
+                        successful = true;
+                      }
+                    break;
+
+                    case "object":
+                      // Array
+                      if (Array.isArray(sVimGlobal.settings[setting])) {
+                        if (Array.isArray(value)) {
+                          sVimGlobal.settings[setting] = value;
+                          successful = true;
+                        }
+                      }
+
+                      // Other object
+                      //FIXX to be used for stuff like "let searchalias g = "google""
+                      else {
+
+                      }
+                    break;
+                  }
+                }
+              }
+            break;
+
+            case "map":
+              // Capture the keybinding and what to bind to
+              var match = /^map\s+(\".+\")\s+(.+)$/.exec(line);
+              if (match) {
+                var shortcut = JSON.parse(match[1]);
+                var command = match[2].trim();
+                // Set the shortcut
+                sVimGlobal.settings.shortcuts[shortcut] = command;
+                successful = true;
+              }
+            break;
+
+            case "unmap":
+              // Capture keybinding to unmap
+              var match = /^unmap\s+(\".+\")$/.exec(line);
+              if (match) {
+                var shortcut = JSON.parse(match[1]);
+                // Remove the shortcut
+                delete sVimGlobal.settings.shortcuts[shortcut];
+                successful = true;
+              }
+            break;
+
+            case "unmapAll":
+              // Unmap all keybindings
+              sVimGlobal.settings.shortcuts = {};
+              successful = true;
+            break;
+          }
+        }
+        catch(err) {
+          console.log("sVim - Settings load error: " + err);
+        }
+
+        return successful;
+      };
+
+      // Load sVimrc and settings at start
+      sVimGlobal.commands.loadsVimrc();
+      sVimGlobal.commands.loadSettings();
+
+      // Catch change in settings
+      safari.extension.settings.addEventListener("change", function(event) {
+        if (event.key == "showsVimrc") {
+          sVimGlobal.commands.showsVimrc();
+        }
+      }, false);
+
+      // Catch commands from a tab
+      safari.application.addEventListener("message", function(event) {
+        // Separate on settings that need event.target and settings that are sending a parameter
+        if (event.name == "sendSettings" || event.name == "sendsVimrc") {
+          sVimGlobal.commands[event.name](event.target);
+        }
+        else if (event.message != undefined) {
+          sVimGlobal.commands[event.name](event.message);
+        }
+        else {
+          sVimGlobal.commands[event.name]();
+        }
+      }, false);
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

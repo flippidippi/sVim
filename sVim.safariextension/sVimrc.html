@@ -1,0 +1,336 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>sVim - sVimrc</title>
+    <style type="text/css" media="screen">
+      body, html {
+        font-family: "Helvetica Neue";
+        margin: 0;
+        padding: 0;
+      }
+
+      #top {
+        background-color: #30A53B;
+        color: white;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+      }
+
+      #top img {
+        display: block;
+        margin: 0 auto;
+        padding: 0;
+        vertical-align: middle;
+      }
+
+      #top button {
+        display: block;
+        width: 100px;
+      }
+
+      #topRight {
+        float: right;
+        margin: -64px 0 0 0;
+      }
+
+      input[type=submit], input[type=button] {
+        background-color: #2EA643;
+        border: none;
+        color: #FFFFFF;
+        font-family: "Helvetica Neue";
+        font-size: 14px;
+        margin: 0;
+      }
+
+      input[type=submit]:hover, input[type=button]:hover {
+        background-color: #FAF1D4;
+        color: #000000;
+      }
+
+      #saveButton, #vimModeButton {
+        border-left: solid 5px #FFFFFF;
+        height: 64px;
+      }
+
+      #vimModeCheckbox {
+        display: none;
+      }
+
+      #rc, #css {
+        width: 100%;
+      }
+
+      .optionsWrapper {
+        margin: 0 auto;
+        padding: 2px 0 5px 0;
+        text-align: center;
+        width: 100%;
+      }
+
+      .optionsWrapper b {
+        font-size: 20px;
+      }
+
+      #message {
+        background-color: #FAF1D4;
+        border-right: solid 5px #FFFFFF;
+        font-size: 14px;
+        height: 39px;
+        opacity: 1;
+        padding: 25px 5px 0 5px;
+        position: absolute;
+        text-align: left;
+        transition: opacity .2s;
+      }
+
+      #message.fade {
+        opacity: 0;
+      }
+    </style>
+    <script src="mousetrap.js"></script>
+    <script src="sVimHint.js"></script>
+    <script src="sVimTab.js"></script>
+    <script src="ace/ace.js"></script>
+    <script>
+      // Create sVimrc object
+      var sVimrc = {};
+
+      window.onload = function() {
+        // Create rc editor
+        var rcEditor = ace.edit("rc");
+        rcEditor.setTheme("ace/theme/solarized_light");
+        rcEditor.setShowPrintMargin(false);
+        // Create css editor
+        var cssEditor = ace.edit("css");
+        cssEditor.setTheme("ace/theme/solarized_light");
+        cssEditor.setShowPrintMargin(false);
+        cssEditor.getSession().setMode("ace/mode/css");
+
+        // Add sVimrc Mousetrap bindings
+        Mousetrap.bindGlobal("command+s", function() { sVimrc.savesVimrc(); }, "keydown");
+        Mousetrap.bindGlobal("ctrl+w", function() { sVimrc.switchEditor(); }, "keydown");
+
+        // Get page elements
+        sVimrc.rc = document.getElementById("rc");
+        sVimrc.rcGistId = document.getElementById("rcGistId");
+        sVimrc.rcWrapper = document.getElementById("rcWrapper");
+        sVimrc.css = document.getElementById("css");
+        sVimrc.cssGistId = document.getElementById("cssGistId");
+        sVimrc.cssWrapper = document.getElementById("cssWrapper");
+        sVimrc.vimModeCheckbox = document.getElementById("vimModeCheckbox");
+        sVimrc.vimModeButton = document.getElementById("vimModeButton");
+        sVimrc.message = document.getElementById("message");
+
+        // Get element heights to help adjust editor heights
+        var optionsHeight = document.getElementsByClassName("optionsWrapper")[0].offsetHeight;
+        var topHeight = document.getElementById("top").offsetHeight;
+
+        // Timeout helper
+        sVimrc.messageTimeout = null;
+
+        // On window resize, set editor heights
+        window.onresize = function(event) {
+          sVimrc.setEditorCss();
+        };
+
+        // Sets editor css according to window width
+        sVimrc.setEditorCss = function() {
+          var height = 0;
+          if (window.innerWidth < 1200) {
+            height = ((window.innerHeight - topHeight - (optionsHeight * 2)) / 2) - 5 + "px";
+            sVimrc.rcWrapper.style.cssFloat = "none";
+            sVimrc.rcWrapper.style.width = "100%";
+            sVimrc.cssWrapper.style.cssFloat = "none";
+            sVimrc.cssWrapper.style.width = "100%";
+          }
+          else {
+            height = (window.innerHeight - topHeight - optionsHeight) - 10 + "px";
+            sVimrc.rcWrapper.style.cssFloat = "left";
+            sVimrc.rcWrapper.style.width = "49.9%";
+            sVimrc.cssWrapper.style.cssFloat = "right";
+            sVimrc.cssWrapper.style.width = "49.9%";
+          }
+
+          sVimrc.rc.style.height = height;
+          sVimrc.css.style.height = height;
+        };
+
+        // Switches between the editors with Ctrl-W
+        sVimrc.switchEditor = function() {
+          if (document.activeElement == sVimrc.rc.firstChild) {
+            sVimrc.css.firstChild.focus();
+          }
+          else {
+            sVimrc.rc.firstChild.focus();
+          }
+        };
+
+        // Bind the inputs to values
+        sVimrc.bind = function() {
+          rcEditor.session.setValue(sVimrc.sVimrc.rc);
+          sVimrc.rcGistId.value = sVimrc.sVimrc.rcGistId;
+          cssEditor.session.setValue(sVimrc.sVimrc.css);
+          sVimrc.cssGistId.value = sVimrc.sVimrc.cssGistId;
+
+          // Local storage
+          sVimrc.vimModeCheckbox.checked = !(localStorage["sVimrcVimMode"] == "true");
+          sVimrc.changeVimMode();
+
+          // Set editor heights
+          sVimrc.setEditorCss();
+        };
+
+        // Save sVimrc values
+        sVimrc.savesVimrc = function() {
+          sVimrc.sVimrc.rc = rcEditor.session.getValue().trim();
+          sVimrc.sVimrc.rcGistId = sVimrc.rcGistId.value.trim();
+          sVimrc.sVimrc.css = cssEditor.session.getValue().trim();
+          sVimrc.sVimrc.cssGistId = sVimrc.cssGistId.value.trim();
+          safari.self.tab.dispatchMessage("savesVimrc", sVimrc.sVimrc);
+
+          // Show saved message
+          clearTimeout(sVimrc.messageTimeout);
+          sVimrc.message.innerHTML = "Save Successful";
+          sVimrc.message.className = "";
+          sVimrc.messageTimeout = setTimeout(function() {
+            sVimrc.message.className = "fade";
+          }, 3000);
+        };
+
+        // Sync rc from url
+        sVimrc.syncRc = function() {
+          // Get raw gist text and place in rc textarea
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+              if (xhr.status == 200) {
+                var files = JSON.parse(xhr.responseText).files;
+                for (file in files) {
+                  if (files.hasOwnProperty(file)) {
+                    var content = files[file].content;
+                    if (content) {
+                      rcEditor.session.setValue(content);
+                      break;
+                    }
+                  }
+                }
+              }
+              else {
+                alert("Error syncing rc file from gist. Make sure the rc gist id is correct and the gist is public.");
+              }
+            }
+          };
+          xhr.open("GET", "https://api.github.com/gists/" + sVimrc.rcGistId.value);
+          xhr.send();
+        };
+
+        //Sync css from url
+        sVimrc.syncCss = function() {
+          // Get raw gist text and place in rc textarea
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+              if (xhr.status == 200) {
+                var files = JSON.parse(xhr.responseText).files;
+                for (file in files) {
+                  if (files.hasOwnProperty(file)) {
+                    var content = files[file].content;
+                    if (content) {
+                      cssEditor.session.setValue(content);
+                      break;
+                    }
+                  }
+                }
+              }
+              else {
+                alert("Error syncing css file from gist. Make sure the css gist id is correct and the gist is public.");
+              }
+            }
+          };
+          xhr.open("GET", "https://api.github.com/gists/" + sVimrc.cssGistId.value);
+          xhr.send();
+        };
+
+        // Revert sVimrc to original
+        sVimrc.revertRc = function() {
+          rcEditor.session.setValue("");
+        };
+
+        // Revert sVimcss to original
+        sVimrc.revertCss = function() {
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4) {
+              if (xhr.status == 200 || xhr.status == 0) {
+                cssEditor.session.setValue(xhr.responseText.trim());
+              }
+            }
+          }
+          xhr.open("GET", "sVim.css", false);
+          xhr.send();
+        };
+
+        // Switch vim mode in editors
+        sVimrc.changeVimMode = function() {
+          if (sVimrc.vimModeCheckbox.checked) {
+            rcEditor.setKeyboardHandler("");
+            cssEditor.setKeyboardHandler("");
+            localStorage["sVimrcVimMode"] = false;
+            sVimrc.vimModeCheckbox.checked = false;
+            sVimrc.vimModeButton.value = "Vim Mode Off";
+          }
+          else {
+            rcEditor.setKeyboardHandler("ace/keyboard/vim");
+            cssEditor.setKeyboardHandler("ace/keyboard/vim");
+            localStorage["sVimrcVimMode"] = true;
+            sVimrc.vimModeCheckbox.checked = true;
+            sVimrc.vimModeButton.value = "Vim Mode On";
+          }
+        };
+
+        // Init sVimrc
+        safari.self.tab.dispatchMessage("sendsVimrc");
+
+        // Catch commands from global
+        safari.self.addEventListener("message", function(event) {
+          if (event.name === "sVimrc") {
+            sVimrc.sVimrc = event.message;
+            sVimrc.bind();
+          }
+        }, false);
+      };
+    </script>
+  </head>
+  <body>
+    <div id="message" class="fade"></div>
+
+    <div id="top">
+      <img src="Icon-64.png" alt="sVim"/>
+      <div id="topRight">
+        <input type="button" id="saveButton" value="Save" onClick="sVimrc.savesVimrc()"/><input type="button" id="vimModeButton" value="Vim Mode" onClick="sVimrc.changeVimMode()"/>
+        <input type="checkbox" id="vimModeCheckbox"/>
+      </div>
+    </div>
+
+    <div id="rcWrapper">
+      <div class="optionsWrapper">
+        <b>sVimrc</b> |
+        gist id: <input type="text" id="rcGistId"/>
+        <input type="button" value="Sync" onClick="sVimrc.syncRc()"/>
+        <input type="button" value="Reset" onClick="sVimrc.revertRc()"/>
+      </div>
+      <div id="rc"></div>
+    </div>
+
+    <div id="cssWrapper">
+      <div class="optionsWrapper">
+        <b>sVimcss</b> |
+        gist id: <input type="text" id="cssGistId"/>
+        <input type="button" value="Sync" onClick="sVimrc.syncCss()"/>
+        <input type="button" value="Reset" onClick="sVimrc.revertCss()"/>
+      </div>
+      <div id="css"></div>
+    </div>
+  </body>
+</html>
