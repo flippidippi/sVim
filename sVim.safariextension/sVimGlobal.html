@@ -6,7 +6,11 @@
       // Create global object
       var sVimGlobal = {};
       // Array of previously closed tabs
-      sVimGlobal.closedTabs = [];
+      sVimGlobal.lastClosedTabs = [];
+      // Keep track of the last active tabs
+      sVimGlobal.lastActiveTabs = [];
+      // Keep track of windows
+      sVimGlobal.browserWindows = safari.application.browserWindows;
       // Set path to sVimrc.html
       sVimGlobal.sVimrcPageUrl = safari.extension.baseURI + "sVimrc.html"
       // Define commands that can be run
@@ -42,7 +46,27 @@
 
         // Go to the last tab
         lastTab: function() {
-          safari.application.activeBrowserWindow.tabs[tabs.length - 1].activate();
+          var tabs = safari.application.activeBrowserWindow.tabs;
+
+          tabs[tabs.length - 1].activate();
+        },
+
+        // Go to the last active tab
+        lastActiveTab: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          var found = false;
+
+          for (var i = 0; i < sVimGlobal.lastActiveTabs.length; i++) {
+            // Clean up closed tabs
+            if (sVimGlobal.lastActiveTabs[i].browserWindow == undefined) {
+              sVimGlobal.lastActiveTabs.splice(i, 1);
+            }
+            else if (!found && tab != sVimGlobal.lastActiveTabs[i]) {
+              found = true;
+              sVimGlobal.lastActiveTabs[i].browserWindow.activate();
+              sVimGlobal.lastActiveTabs[i].activate();
+            }
+          }
         },
 
         // Move tab left
@@ -89,35 +113,32 @@
           newTab.url = sVimGlobal.settings.newtaburl;
         },
 
-        // Reopen closed tab
-        reopenTab: function() {
+        // Reopen last closed tab
+        lastClosedTab: function() {
           var tabs = safari.application.activeBrowserWindow.tabs;
           var tab = safari.application.activeBrowserWindow.activeTab;
 
-          if (sVimGlobal.closedTabs.length > 0) {
+          if (sVimGlobal.lastClosedTabs.length > 0) {
             var newTab = safari.application.activeBrowserWindow.openTab("foreground", tabs.indexOf(tab) + 1);
-            newTab.url = sVimGlobal.closedTabs.pop();
+            newTab.url = sVimGlobal.lastClosedTabs.pop();
             setTimeout(function() { newTab.activate(); }, 100 );
           }
         },
 
-        // Reopen closed tab in background
-        reopenTabBackground: function() {
+        // Reopen last closed tab in background
+        lastClosedTabBackground: function() {
           var tabs = safari.application.activeBrowserWindow.tabs;
           var tab = safari.application.activeBrowserWindow.activeTab;
 
-          if (sVimGlobal.closedTabs.length > 0) {
+          if (sVimGlobal.lastClosedTabs.length > 0) {
             var newTab = safari.application.activeBrowserWindow.openTab("background", tabs.indexOf(tab) + 1);
-            newTab.url = sVimGlobal.closedTabs.pop();
-            setTimeout(function() { newTab.activate(); }, 100 );
+            newTab.url = sVimGlobal.lastClosedTabs.pop();
           }
         },
 
         // Close tab
         quit: function() {
-          var tab = safari.application.activeBrowserWindow.activeTab;
-          sVimGlobal.closedTabs.push(tab.url);
-          tab.close();
+          safari.application.activeBrowserWindow.activeTab.close();
         },
 
         // Close tab to the left
@@ -162,6 +183,41 @@
           for (var j = tabs.length - 1; j > tabs.indexOf(tab); j--) {
             tabs[j].close();
           }
+        },
+
+        // Open Safari reader
+        openReader: function() {
+          safari.application.activeBrowserWindow.activeTab.reader.enter();
+        },
+
+        // Open new browser window
+        newWindow: function(url) {
+          if (typeof url === "undefined") url = sVimGlobal.settings.newtaburl;
+
+          safari.application.openBrowserWindow();
+          safari.application.activeBrowserWindow.activeTab.url = url;
+        },
+
+        // Next window
+        nextWindow: function() {
+          var browserWindow = safari.application.activeBrowserWindow;
+
+          var i = sVimGlobal.browserWindows.indexOf(browserWindow) + 1;
+          if (!sVimGlobal.browserWindows[i]) {
+            i = 0;
+          }
+          sVimGlobal.browserWindows[i].activate();
+        },
+
+        // Previous window
+        previousWindow: function() {
+          var browserWindow = safari.application.activeBrowserWindow;
+
+          var i = sVimGlobal.browserWindows.indexOf(browserWindow) - 1;
+          if (!sVimGlobal.browserWindows[i]) {
+            i = sVimGlobal.browserWindows.length - 1;
+          }
+          sVimGlobal.browserWindows[i].activate();
         },
 
         // Load settings from default/custom
@@ -257,8 +313,11 @@
         sVimGlobal.settings.zoomstep              = 10;
         sVimGlobal.settings.hintcharacters        = "asdfgqwertzxcvb";
         sVimGlobal.settings.newtaburl             = "topsites://";
+        sVimGlobal.settings.homeurl               = "topsites://";
         sVimGlobal.settings.mapleader             = "\\";
-        sVimGlobal.settings.blacklists             = [];
+        sVimGlobal.settings.blacklists            = [];
+        sVimGlobal.settings.lastactivetablimit    = 25;
+        sVimGlobal.settings.lastclosedtablimit    = 25;
 
         // Load default shortcuts
         sVimGlobal.settings.shortcuts = {
@@ -285,22 +344,29 @@
           "g x t"       : "closeTabRight",
           "g x 0"       : "closeTabsToLeft",
           "g x $"       : "closeTabsToRight",
-          "shift+x"     : "reopenTab",
+          "shift+x"     : "lastClosedTab",
+          "ctrl+shift+x": "lastClosedTabBackground",
           "g t"         : "nextTab",
           "shift+k"     : "nextTab",
           "g shift+t"   : "previousTab",
           "shift+j"     : "previousTab",
           "g 0"         : "firstTab",
           "g $"         : "lastTab",
+          "g l"         : "lastActiveTab",
           "shift+,"     : "moveTabLeft",
           "shift+."     : "moveTabRight",
           "shift+h"     : "historyBack",
           "shift+l"     : "historyForward",
-          "z i"          : "zoomPageIn",
-          "z o"          : "zoomPageOut",
-          "z 0"          : "zoomOrig",
+          "z i"         : "zoomPageIn",
+          "z o"         : "zoomPageOut",
+          "z 0"         : "zoomOrig",
           "f"           : "linkHints",
           "shift+f"     : "linkHintsNewTab",
+          "g r"         : "openReader",
+          "g h"         : "homePage",
+          "w"           : "newWindow",
+          "g w"         : "nextWindow",
+          "g shift+w"   : "previousWindow",
           "escape"      : "normalMode",
           "ctrl+["      : "normalMode",
           "i"           : "insertMode",
@@ -446,19 +512,82 @@
         }
       }, false);
 
-      // Catch commands from a tab
+      // Catch message command from tab
       safari.application.addEventListener("message", function(event) {
         // Separate on settings that need event.target and settings that are sending a parameter
-        if (event.name == "sendSettings" || event.name == "sendsVimrc") {
-          sVimGlobal.commands[event.name](event.target);
-        }
-        else if (event.message != undefined) {
-          sVimGlobal.commands[event.name](event.message);
-        }
-        else {
-          sVimGlobal.commands[event.name]();
+        if (event.target instanceof SafariBrowserTab) {
+          if (event.name == "sendSettings" || event.name == "sendsVimrc") {
+            sVimGlobal.commands[event.name](event.target);
+          }
+          else if (event.message != undefined) {
+            sVimGlobal.commands[event.name](event.message);
+          }
+          else {
+            sVimGlobal.commands[event.name]();
+          }
         }
       }, false);
+
+      // Catch activate command from tab
+      safari.application.addEventListener("activate", function(event) {
+        // Send settings to reader
+        if (event.target instanceof SafariReader) {
+          event.target.dispatchMessage("settings", sVimGlobal.settings);
+        }
+      }, true);
+
+      // Catch deactivate command from tab
+      safari.application.addEventListener("deactivate", function(event) {
+        // Keep track of last active tabs
+        if (event.target instanceof SafariBrowserTab || event.target instanceof SafariBrowserWindow) {
+          var found = false;
+          var tab = safari.application.activeBrowserWindow.activeTab;
+
+          for (var i = 0; i < sVimGlobal.lastActiveTabs.length; i++) {
+            // Clean up closed tabs
+            if (sVimGlobal.lastActiveTabs[i].browserWindow == undefined) {
+              sVimGlobal.lastActiveTabs.splice(i, 1);
+            }
+            else if (!found && tab == sVimGlobal.lastActiveTabs[i]) {
+              found = true;
+              sVimGlobal.lastActiveTabs.unshift(sVimGlobal.lastActiveTabs.splice(i, 1)[0]);
+            }
+          }
+          if (!found) {
+            sVimGlobal.lastActiveTabs.unshift(tab);
+          }
+          // Cut to limit size
+          if (sVimGlobal.lastActiveTabs.length > sVimGlobal.settings.lastactivetablimit) {
+            sVimGlobal.lastActiveTabs = sVimGlobal.lastActiveTabs.splice(0, sVimGlobal.settings.lastactivetablimit);
+          }
+        }
+      }, true);
+
+      // Catch open command from tab
+      safari.application.addEventListener("open", function(event) {
+        // Track windows since Safari reorders browserWindows
+        if (event.target instanceof SafariBrowserWindow) {
+          sVimGlobal.browserWindows = safari.application.browserWindows;
+        }
+      }, true);
+
+      // Catch close command from tab
+      safari.application.addEventListener("close", function(event) {
+        // Keep track of closed tabs
+        if (event.target instanceof SafariBrowserTab) {
+          if (event.target.url != undefined) {
+            sVimGlobal.lastClosedTabs.push(event.target.url);
+          }
+          // Cut to limit size
+          if (sVimGlobal.lastClosedTabs.length > sVimGlobal.settings.lastclosedtablimit) {
+            sVimGlobal.lastClosedTabs = sVimGlobal.lastClosedTabs.splice(-sVimGlobal.settings.lastclosedtablimit);
+          }
+        }
+        // Track windows since Safari reorders browserWindows
+        else if (event.target instanceof SafariBrowserWindow) {
+          sVimGlobal.browserWindows = safari.application.browserWindows;
+        }
+      }, true);
     </script>
   </head>
   <body>

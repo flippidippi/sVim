@@ -117,9 +117,14 @@ sVimTab.commands = {
     safari.self.tab.dispatchMessage("closeTabsToRight");
   },
 
-   // Reopen closed tab
-  reopenTab: function() {
-    safari.self.tab.dispatchMessage("reopenTab");
+  // Reopen last closed tab
+  lastClosedTab: function() {
+    safari.self.tab.dispatchMessage("lastClosedTab");
+  },
+
+  // Reopen last closed tab in background
+  lastClosedTabBackground: function() {
+    safari.self.tab.dispatchMessage("lastClosedTabBackground");
   },
 
   // Go to next tab
@@ -140,6 +145,11 @@ sVimTab.commands = {
   // Go to the last tab
   lastTab: function() {
     safari.self.tab.dispatchMessage("lastTab");
+  },
+
+  // Go to the last active tab
+  lastActiveTab: function() {
+    safari.self.tab.dispatchMessage("lastActiveTab");
   },
 
   // Moves the current tab left
@@ -185,6 +195,31 @@ sVimTab.commands = {
   // Link hints, open in new tab
   linkHintsNewTab: function() {
     sVimHint.start(false);
+  },
+
+  // Open Safari reader
+  openReader: function() {
+    safari.self.tab.dispatchMessage("openReader");
+  },
+
+  // Go to home page
+  homePage: function() {
+    window.location.assign(sVimTab.settings.homeurl);
+  },
+
+  // Open new window
+  newWindow: function() {
+    safari.self.tab.dispatchMessage("newWindow");
+  },
+
+  // Go to next window
+  nextWindow: function() {
+    safari.self.tab.dispatchMessage("nextWindow");
+  },
+
+  // Go to previous window
+  previousWindow: function() {
+    safari.self.tab.dispatchMessage("previousWindow");
   },
 
   // Enter normal mode
@@ -270,16 +305,6 @@ sVimTab.checkBlacklist = function() {
       continue;
     }
     if (sVimTab.matchLocation(document.location, blacklist[0])) {
-      // FIXX for optional keys to run
-      //if (blacklist.length > 1) {
-        //var unmaps      = blacklist.slice(1),
-        //unmapString = "";
-        //for (var j = 0, q = unmaps.length; j < q; ++j) {
-          //unmapString += "\nunmap " + unmaps[j];
-        //}
-        //Mappings.siteSpecificBlacklists += unmapString;
-        //break;
-      //}
       return true;
     }
   }

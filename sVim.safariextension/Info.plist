@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Phillip Lanclos</string>
 	<key>Builder Version</key>
-	<string>9537.77.4</string>
+	<string>9537.78.2</string>
 	<key>CFBundleDisplayName</key>
 	<string>sVim</string>
 	<key>CFBundleIdentifier</key>
@@ -37,6 +37,12 @@
 				<string>sVimHint.js</string>
 			</array>
 		</dict>
+		<key>Whitelist</key>
+		<array>
+			<string>http://*/*</string>
+			<string>https://*/*</string>
+			<string>safari-reader://*/*</string>
+		</array>
 	</dict>
 	<key>Description</key>
 	<string>Vim shortcuts in Safari</string>
