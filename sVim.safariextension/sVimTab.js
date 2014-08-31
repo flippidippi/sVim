@@ -7,6 +7,10 @@ sVimTab.settings = {};
 sVimTab.mode = "normal";
 // Indicates if window is top
 sVimTab.topWindow = (window.top === window);
+// Indicates the top domain
+sVimTab.topDomain = (!sVimTab.topWindow && window.location.ancestorOrigins) ? window.location.ancestorOrigins[0].match(/:\/\/(.*)/)[1] : window.location.hostname;
+// Indicates the top url
+sVimTab.topUrl = (!sVimTab.topWindow && document.referrer) ? document.referrer : window.location.href;
 // Define commands that can be run
 sVimTab.commands = {
   // Scroll down
@@ -61,12 +65,12 @@ sVimTab.commands = {
 
   // Scroll to top of page
   scrollToTop: function() {
-    sVimTab.scrollBy(0, -window.pageYOffset - 30);
+    sVimTab.scrollBy(0, -window.pageYOffset * 1.1);
   },
 
   // Scroll to bottom of page
   scrollToBottom: function() {
-    sVimTab.scrollBy(0, document.body.scrollHeight - window.pageYOffset - window.innerHeight + 30);
+    sVimTab.scrollBy(0, (document.body.scrollHeight - window.pageYOffset - window.innerHeight) * 1.1);
   },
 
   // Refresh
@@ -195,6 +199,32 @@ sVimTab.commands = {
   // Link hints, open in new tab
   linkHintsNewTab: function() {
     sVimHint.start(false);
+  },
+
+  // Go to parent url directory
+  parentDirectory: function() {
+    if (/:\/\/.*?\/./.test(sVimTab.topUrl)) {
+      window.top.location.assign(sVimTab.topUrl.match(/(.*)./)[1].match(/.*\//));
+    }
+  },
+
+  // Go to top url directory
+  topDirectory: function() {
+    if (/:\/\/.*?\/./.test(sVimTab.topUrl)) {
+      window.top.location.assign("http://" + sVimTab.topDomain);
+    }
+  },
+
+  // Go to top url domain
+  parentDomain: function() {
+    var host = sVimTab.topDomain.replace(/^(?:www\d*\.)?.*?\./, "");
+    var domains = host.split(".").length;
+    if (domains == 2) {
+      window.top.location.assign("http://www." + host);
+    }
+    else if (domains > 2) {
+      window.top.location.assign("http://" + host);
+    }
   },
 
   // Open Safari reader
@@ -408,9 +438,7 @@ sVimTab.scrollBy = function(x, y) {
 };
 
 // Init sVimTab
-if (sVimTab.topWindow) {
-  safari.self.tab.dispatchMessage("sendSettings");
-}
+safari.self.tab.dispatchMessage("sendSettings");
 
 // Catch commands from global
 safari.self.addEventListener("message", function(event) {
