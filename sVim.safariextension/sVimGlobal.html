@@ -100,7 +100,7 @@
           if (typeof url === "undefined") url = sVimGlobal.settings.newtaburl;
 
           var newTab = safari.application.activeBrowserWindow.openTab("foreground", tabs.indexOf(tab) + 1);
-          newTab.url = sVimGlobal.settings.newtaburl;
+          newTab.url = url;
         },
 
         // New tab in the background
@@ -110,7 +110,7 @@
           if (typeof url === "undefined") url = sVimGlobal.settings.newtaburl;
 
           var newTab = safari.application.activeBrowserWindow.openTab("background", tabs.indexOf(tab) + 1);
-          newTab.url = sVimGlobal.settings.newtaburl;
+          newTab.url = url;
         },
 
         // Reopen last closed tab
@@ -121,7 +121,6 @@
           if (sVimGlobal.lastClosedTabs.length > 0) {
             var newTab = safari.application.activeBrowserWindow.openTab("foreground", tabs.indexOf(tab) + 1);
             newTab.url = sVimGlobal.lastClosedTabs.pop();
-            setTimeout(function() { newTab.activate(); }, 100 );
           }
         },
 
@@ -234,11 +233,15 @@
         // Show sVimrc page
         showsVimrc: function() {
           // Go to an open sVimrc tab
-          var tabs = safari.application.activeBrowserWindow.tabs;
-          for (var i = 0; i < tabs.length; i++) {
-            if (tabs[i].url == sVimGlobal.sVimrcPageUrl) {
-              tabs[i].activate();
-              return;
+          var browserWindows = safari.application.browserWindows;
+          for (var j = 0; j < browserWindows.length; j++) {
+            var tabs = browserWindows[j].tabs;
+            for (var i = 0; i < tabs.length; i++) {
+              if (tabs[i].url == sVimGlobal.sVimrcPageUrl) {
+                tabs[i].browserWindow.activate();
+                tabs[i].activate();
+                return;
+              }
             }
           }
 
@@ -374,6 +377,7 @@
           "ctrl+["      : "normalMode",
           "i"           : "insertMode",
           "g v"         : "showsVimrc",
+          "?"           : "help"
         };
       };
 

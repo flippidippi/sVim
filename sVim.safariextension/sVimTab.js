@@ -11,6 +11,8 @@ sVimTab.topWindow = (window.top === window);
 sVimTab.topDomain = (!sVimTab.topWindow && window.location.ancestorOrigins) ? window.location.ancestorOrigins[0].match(/:\/\/(.*)/)[1] : window.location.hostname;
 // Indicates the top url
 sVimTab.topUrl = (!sVimTab.topWindow && document.referrer) ? document.referrer : window.location.href;
+// Set path to README.md
+sVimTab.readmeUrl = "https://github.com/flipxfx/sVim/blob/master/README.md";
 // Define commands that can be run
 sVimTab.commands = {
   // Scroll down
@@ -92,8 +94,13 @@ sVimTab.commands = {
   },
 
   // New tab
-  newTab: function() {
-    safari.self.tab.dispatchMessage("newTab");
+  newTab: function(url) {
+    safari.self.tab.dispatchMessage("newTab", url);
+  },
+
+  // New tab in the background
+  newTabBackground: function(url) {
+    safari.self.tab.dispatchMessage("newTabBackground", url);
   },
 
   // Close tab
@@ -269,6 +276,11 @@ sVimTab.commands = {
   // Open the settings page
   showsVimrc: function() {
     safari.self.tab.dispatchMessage("showsVimrc");
+  },
+
+  // Open help
+  help: function() {
+    safari.self.tab.dispatchMessage("newTab", sVimTab.readmeUrl);
   }
 };
 
@@ -393,11 +405,6 @@ sVimTab.matchLocation = function(location, pattern) {
   }
 
   return true;
-};
-
-// New tab in the background
-sVimTab.newTabBackground = function(url) {
-  safari.self.tab.dispatchMessage("newTabBackground", url);
 };
 
 // Scroll by, smooth or not

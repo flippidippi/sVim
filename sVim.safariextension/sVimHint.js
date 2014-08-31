@@ -117,7 +117,7 @@ sVimHint.start = function(newTab) {
         if (/https?:\/\//.test(lastMatchHint.element.href)) {
           event.preventDefault();
           event.stopPropagation();
-        sVimTab.newTabBackground(lastMatchHint.element.href);
+        sVimTab.commands.newTabBackground(lastMatchHint.element.href);
         }
       }
       resetInput();
