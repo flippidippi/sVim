@@ -635,6 +635,18 @@
           sVimGlobal.browserWindows = safari.application.browserWindows;
         }
       }, true);
+
+      // Catch command from toolbar menu
+      safari.application.addEventListener("command", function(event) {
+        switch (event.command) {
+          case "showsVimrc":
+            sVimGlobal.commands.showsVimrc();
+          break;
+          case "help":
+            sVimGlobal.commands.help();
+          break;
+        }
+      }, true);
     </script>
   </head>
   <body>
