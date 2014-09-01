@@ -12,7 +12,7 @@ sVimTab.topDomain = (!sVimTab.topWindow && window.location.ancestorOrigins) ? wi
 // Indicates the top url
 sVimTab.topUrl = (!sVimTab.topWindow && document.referrer) ? document.referrer : window.location.href;
 // Set path to README.md
-sVimTab.readmeUrl = "https://github.com/flipxfx/sVim/blob/master/README.md";
+sVimTab.readmeUrl = "https://github.com/flipxfx/sVim/blob/master/README.md#sVim-Help";
 // Define commands that can be run
 sVimTab.commands = {
   // Scroll down
@@ -35,52 +35,47 @@ sVimTab.commands = {
     sVimTab.scrollBy(sVimTab.settings.scrollstep, 0);
   },
 
-  // Scroll half page down
+  // Scroll half-page down
   scrollPageDown: function() {
     sVimTab.scrollBy(0, window.innerHeight / 2);
   },
 
-  // Scroll half page up
+  // Scroll half-page up
   scrollPageUp: function() {
     sVimTab.scrollBy(0, -window.innerHeight / 2);
   },
 
-  // Scroll full page down
+  // Scroll full-page down
   scrollFullPageDown: function() {
     sVimTab.scrollBy(0, window.innerHeight * (sVimTab.settings.fullpagescrollpercent / 100));
   },
 
-  // Scroll full page up
+  // Scroll full-page up
   scrollFullPageUp: function() {
     sVimTab.scrollBy(0, -window.innerHeight * (sVimTab.settings.fullpagescrollpercent / 100));
   },
 
-  // Scroll to left of page
-  scrollToLeft: function() {
-    sVimTab.scrollBy(-window.pageXOffset - 30, 0);
-  },
-
-  // Scroll to right of page
-  scrollToRight: function() {
-    sVimTab.scrollBy(document.body.scrollWidth - window.pageXOffset - window.innerWidth + 30, 0);
-  },
-
-  // Scroll to top of page
-  scrollToTop: function() {
-    sVimTab.scrollBy(0, -window.pageYOffset * 1.1);
-  },
-
-  // Scroll to bottom of page
+  // Scroll to bottom of the page
   scrollToBottom: function() {
     sVimTab.scrollBy(0, (document.body.scrollHeight - window.pageYOffset - window.innerHeight) * 1.1);
   },
 
-  // Refresh
-  reloadTab: function() {
-    location.reload();
+  // Scroll to top of the page
+  scrollToTop: function() {
+    sVimTab.scrollBy(0, -window.pageYOffset * 1.1);
   },
 
-  // Go to first input
+  // Scroll to the left of the page
+  scrollToLeft: function() {
+    sVimTab.scrollBy(-window.pageXOffset - 30, 0);
+  },
+
+  // Scroll to the right of the page
+  scrollToRight: function() {
+    sVimTab.scrollBy(document.body.scrollWidth - window.pageXOffset - window.innerWidth + 30, 0);
+  },
+
+  // Go to the first input box
   goToInput: function() {
     var inputs = document.querySelectorAll("input,textarea");
     for (var i = 0; i < inputs.length; i++) {
@@ -93,94 +88,9 @@ sVimTab.commands = {
     return false;
   },
 
-  // New tab
-  newTab: function(url) {
-    safari.self.tab.dispatchMessage("newTab", url);
-  },
-
-  // New tab in the background
-  newTabBackground: function(url) {
-    safari.self.tab.dispatchMessage("newTabBackground", url);
-  },
-
-  // Close tab
-  quit: function() {
-    safari.self.tab.dispatchMessage("quit");
-  },
-
-  // Close tab to the left
-  closeTabLeft: function() {
-    safari.self.tab.dispatchMessage("closeTabLeft");
-  },
-
-  // Close tab to the right
-  closeTabRight: function() {
-    safari.self.tab.dispatchMessage("closeTabRight");
-  },
-
-  // Close tabs to the left
-  closeTabsToLeft: function() {
-    safari.self.tab.dispatchMessage("closeTabsToLeft");
-  },
-
-  // Close tabs to the right
-  closeTabsToRight: function() {
-    safari.self.tab.dispatchMessage("closeTabsToRight");
-  },
-
-  // Reopen last closed tab
-  lastClosedTab: function() {
-    safari.self.tab.dispatchMessage("lastClosedTab");
-  },
-
-  // Reopen last closed tab in background
-  lastClosedTabBackground: function() {
-    safari.self.tab.dispatchMessage("lastClosedTabBackground");
-  },
-
-  // Go to next tab
-  nextTab: function() {
-    safari.self.tab.dispatchMessage("nextTab");
-  },
-
-  // Go to previous tab
-  previousTab: function() {
-    safari.self.tab.dispatchMessage("previousTab");
-  },
-
-  // Go to the first tab
-  firstTab: function() {
-    safari.self.tab.dispatchMessage("firstTab");
-  },
-
-  // Go to the last tab
-  lastTab: function() {
-    safari.self.tab.dispatchMessage("lastTab");
-  },
-
-  // Go to the last active tab
-  lastActiveTab: function() {
-    safari.self.tab.dispatchMessage("lastActiveTab");
-  },
-
-  // Moves the current tab left
-  moveTabLeft: function() {
-    safari.self.tab.dispatchMessage("moveTabLeft");
-  },
-
-  // Moves the current tab right
-  moveTabRight: function() {
-    safari.self.tab.dispatchMessage("moveTabRight");
-  },
-
-  // Go back in history
-  historyBack: function() {
-    history.back();
-  },
-
-  // Go forward in history
-  historyForward: function() {
-    history.forward();
+  // Reload the current tab
+  reloadTab: function() {
+    location.reload();
   },
 
   // Zoom page in
@@ -198,31 +108,126 @@ sVimTab.commands = {
     document.body.style.zoom = "1";
   },
 
-  // Link hints
-  linkHints: function() {
-    sVimHint.start(true);
+  // Open Safari reader if possible
+  openReader: function() {
+    safari.self.tab.dispatchMessage("openReader");
   },
 
-  // Link hints, open in new tab
-  linkHintsNewTab: function() {
-    sVimHint.start(false);
+  // Show sVimrc page
+  showsVimrc: function() {
+    safari.self.tab.dispatchMessage("showsVimrc");
   },
 
-  // Go to parent url directory
+  // Open help page in new tab
+  help: function() {
+    safari.self.tab.dispatchMessage("newTab", sVimTab.readmeUrl);
+  },
+
+  // Navigate to the next tab
+  nextTab: function() {
+    safari.self.tab.dispatchMessage("nextTab");
+  },
+
+  // Navigate to the previous tab
+  previousTab: function() {
+    safari.self.tab.dispatchMessage("previousTab");
+  },
+
+  // Go to the first tab
+  firstTab: function() {
+    safari.self.tab.dispatchMessage("firstTab");
+  },
+
+  // Go to the last tab
+  lastTab: function() {
+    safari.self.tab.dispatchMessage("lastTab");
+  },
+
+  // Go to the last active tab that's still open
+  lastActiveTab: function() {
+    safari.self.tab.dispatchMessage("lastActiveTab");
+  },
+
+  // Close the current tab
+  quit: function() {
+    safari.self.tab.dispatchMessage("quit");
+  },
+
+  // Close the tab to the left of the current tab
+  closeTabLeft: function() {
+    safari.self.tab.dispatchMessage("closeTabLeft");
+  },
+
+  // Close the tab to the right of the current tab
+  closeTabRight: function() {
+    safari.self.tab.dispatchMessage("closeTabRight");
+  },
+
+  // Close all tabs to the left of the current tab
+  closeTabsToLeft: function() {
+    safari.self.tab.dispatchMessage("closeTabsToLeft");
+  },
+
+  // Close all tabs to the right of the current tab
+  closeTabsToRight: function() {
+    safari.self.tab.dispatchMessage("closeTabsToRight");
+  },
+
+  // Open the last closed tab
+  lastClosedTab: function() {
+    safari.self.tab.dispatchMessage("lastClosedTab");
+  },
+
+  // Open the last closed tab in background
+  lastClosedTabBackground: function() {
+    safari.self.tab.dispatchMessage("lastClosedTabBackground");
+  },
+
+  // Open new tab
+  newTab: function(url) {
+    safari.self.tab.dispatchMessage("newTab", url);
+  },
+
+  // Open new tab in background
+  newTabBackground: function(url) {
+    safari.self.tab.dispatchMessage("newTabBackground", url);
+  },
+
+  // Go back in history
+  goBack: function() {
+    history.back();
+  },
+
+  // Go forward in history
+  goForward: function() {
+    history.forward();
+  },
+
+  // Move current tab left
+  moveTabLeft: function() {
+    safari.self.tab.dispatchMessage("moveTabLeft");
+  },
+
+  // Move current tab right
+  moveTabRight: function() {
+    safari.self.tab.dispatchMessage("moveTabRight");
+  },
+
+  // Navigate to parent directory
   parentDirectory: function() {
     if (/:\/\/.*?\/./.test(sVimTab.topUrl)) {
       window.top.location.assign(sVimTab.topUrl.match(/(.*)./)[1].match(/.*\//));
     }
   },
 
-  // Go to top url directory
+  // Navigate to top directory
   topDirectory: function() {
     if (/:\/\/.*?\/./.test(sVimTab.topUrl)) {
       window.top.location.assign("http://" + sVimTab.topDomain);
     }
   },
 
-  // Go to top url domain
+  // Navigate to parent domain
   parentDomain: function() {
     var host = sVimTab.topDomain.replace(/^(?:www\d*\.)?.*?\./, "");
     var domains = host.split(".").length;
@@ -234,12 +239,7 @@ sVimTab.commands = {
     }
   },
 
-  // Open Safari reader
-  openReader: function() {
-    safari.self.tab.dispatchMessage("openReader");
-  },
-
-  // Go to home page
+  // Navigate to home page
   homePage: function() {
     window.location.assign(sVimTab.settings.homeurl);
   },
@@ -249,12 +249,12 @@ sVimTab.commands = {
     safari.self.tab.dispatchMessage("newWindow");
   },
 
-  // Go to next window
+  // Navigate to the next window
   nextWindow: function() {
     safari.self.tab.dispatchMessage("nextWindow");
   },
 
-  // Go to previous window
+  // Navigate to the previous window
   previousWindow: function() {
     safari.self.tab.dispatchMessage("previousWindow");
   },
@@ -273,14 +273,14 @@ sVimTab.commands = {
     sVimTab.mode = "insert";
   },
 
-  // Open the settings page
-  showsVimrc: function() {
-    safari.self.tab.dispatchMessage("showsVimrc");
+  // Open link in current tab
+  createHint: function() {
+    sVimHint.start(true);
   },
 
-  // Open help
-  help: function() {
-    safari.self.tab.dispatchMessage("newTab", sVimTab.readmeUrl);
+  // Open link in new background tab
+  createTabbedHint: function() {
+    sVimHint.start(false);
   }
 };
 
