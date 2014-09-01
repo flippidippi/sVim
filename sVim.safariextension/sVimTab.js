@@ -11,8 +11,6 @@ sVimTab.topWindow = (window.top === window);
 sVimTab.topDomain = (!sVimTab.topWindow && window.location.ancestorOrigins) ? window.location.ancestorOrigins[0].match(/:\/\/(.*)/)[1] : window.location.hostname;
 // Indicates the top url
 sVimTab.topUrl = (!sVimTab.topWindow && document.referrer) ? document.referrer : window.location.href;
-// Set path to README.md
-sVimTab.readmeUrl = "https://github.com/flipxfx/sVim/blob/master/README.md#sVim-Help";
 // Define commands that can be run
 sVimTab.commands = {
   // Scroll down
@@ -120,7 +118,7 @@ sVimTab.commands = {
 
   // Open help page in new tab
   help: function() {
-    safari.self.tab.dispatchMessage("newTab", sVimTab.readmeUrl);
+    safari.self.tab.dispatchMessage("help");
   },
 
   // Navigate to the next tab

@@ -6,13 +6,27 @@
 		<key>DefaultValue</key>
 		<false/>
 		<key>FalseValue</key>
-		<true/>
+		<false/>
 		<key>Key</key>
 		<string>showsVimrc</string>
 		<key>Title</key>
 		<string>Click checkbox to show settings.</string>
 		<key>TrueValue</key>
+		<true/>
+		<key>Type</key>
+		<string>CheckBox</string>
+	</dict>
+	<dict>
+		<key>DefaultValue</key>
 		<false/>
+		<key>FalseValue</key>
+		<false/>
+		<key>Key</key>
+		<string>help</string>
+		<key>Title</key>
+		<string>Click checkbox to show help.</string>
+		<key>TrueValue</key>
+		<true/>
 		<key>Type</key>
 		<string>CheckBox</string>
 	</dict>

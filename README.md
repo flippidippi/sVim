@@ -32,7 +32,7 @@ Functionality will mostly follow the Chrome extension [cVim](https://github.com/
 | "z 0"                  | zoom page to original size                     | zoomOrig                |
 | "g r"                  | open Safari reader if possible                 | openReader              |
 | "g v"                  | show sVimrc page                               | showsVimrc              |
-| "g h"                  | open help page in new tab                      | help                    |
+| "g ?"                  | open help page in new tab                      | help                    |
 | **Tab Navigation**     |                                                |                         |
 | "g t", "shift+k"       | navigate to the next tab                       | nextTab                 |
 | "g shift+t", "shift+j" | navigate to the previous tab                   | previousTab             |

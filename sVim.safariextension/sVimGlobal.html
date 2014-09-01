@@ -38,6 +38,8 @@
           // If not tab is open with sVimrc then open a new tab
           var newTab = safari.application.activeBrowserWindow.openTab();
           newTab.url = sVimGlobal.sVimrcPageUrl;
+          newTab.browserWindow.activate();
+          newTab.activate();
         },
 
         // Load sVimrc
@@ -91,7 +93,29 @@
               sVimGlobal.commands["sendSettings"](tabs[i]);
             }
           }
-        }
+        },
+
+        // Open help page in new tab
+        help: function() {
+          // Go to an open help tab
+          var browserWindows = safari.application.browserWindows;
+          for (var j = 0; j < browserWindows.length; j++) {
+            var tabs = browserWindows[j].tabs;
+            for (var i = 0; i < tabs.length; i++) {
+              if (tabs[i].url == sVimGlobal.settings.helpurl) {
+                tabs[i].browserWindow.activate();
+                tabs[i].activate();
+                return;
+              }
+            }
+          }
+
+          // If not tab is open with sVimrc then open a new tab
+          var newTab = safari.application.activeBrowserWindow.openTab();
+          newTab.url = sVimGlobal.settings.helpurl;
+          newTab.browserWindow.activate();
+          newTab.activate();
+        },
 
         // Navigate to the next tab
         nextTab: function() {
@@ -322,7 +346,7 @@
         sVimGlobal.settings.newtaburl             = "topsites://";
         sVimGlobal.settings.blacklists            = [];
 
-        // Load default shortcuts
+        // Load default shortcuts (private setting)
         sVimGlobal.settings.shortcuts = {
           // Movement
           "j"             : "scrollDown",
@@ -348,7 +372,7 @@
           "z 0"           : "zoomOrig",
           "g r"           : "openReader",
           "g v"           : "showsVimrc",
-          "g h"           : "help",
+          "g ?"           : "help",
           // Tab Navigation
           "g t"           : "nextTab",
           "shift+k"       : "nextTab",
@@ -386,6 +410,9 @@
           "shift+f"       : "createTabbedHint",
           //FIXX "ctrl+shift+f"  : "createActiveTabbedHint"
         };
+
+        // Other private settings
+        sVimGlobal.settings.helpurl = "https://github.com/flipxfx/sVim#svim-help";
       };
 
       // Loads custom settings
@@ -439,8 +466,9 @@
                 var setting = match[1];
                 var settingOption = match[2];
                 var value = JSON.parse(match[3].trim());
+                var privateSettings = ["shortcuts", "helpurl"];
                 // Set the setting according to the setting type (array, number, string, object etc.)
-                if (sVimGlobal.settings[setting] != undefined) {
+                if (sVimGlobal.settings[setting] != undefined && privateSettings.indexOf(setting) == -1) {
                   switch (typeof sVimGlobal.settings[setting]) {
                     // Number
                     case "number":
@@ -521,8 +549,13 @@
 
       // Catch change in settings
       safari.extension.settings.addEventListener("change", function(event) {
-        if (event.key == "showsVimrc") {
-          sVimGlobal.commands.showsVimrc();
+        switch (event.key) {
+          case "showsVimrc":
+            sVimGlobal.commands.showsVimrc();
+          break;
+          case "help":
+            sVimGlobal.commands.help();
+          break;
         }
       }, false);
 

@@ -7,6 +7,7 @@
         font-family: "Helvetica Neue";
         margin: 0;
         padding: 0;
+        min-width: 470px;
       }
 
       #top {
@@ -48,7 +49,7 @@
         color: #000000;
       }
 
-      #saveButton, #vimModeButton {
+      #saveButton, #vimModeButton, #helpButton {
         border-left: solid 5px #FFFFFF;
         height: 64px;
       }
@@ -308,7 +309,7 @@
     <div id="top">
       <img src="Icon-64.png" alt="sVim"/>
       <div id="topRight">
-        <input type="button" id="saveButton" value="Save" onClick="sVimrc.savesVimrc()"/><input type="button" id="vimModeButton" value="Vim Mode" onClick="sVimrc.changeVimMode()"/>
+        <input type="button" id="saveButton" value="Save" onClick="sVimrc.savesVimrc()"/><input type="button" id="vimModeButton" value="Vim Mode" onClick="sVimrc.changeVimMode()"/><input type="button" id="helpButton" value="Help" onClick="sVimTab.commands.help()"/>
         <input type="checkbox" id="vimModeCheckbox"/>
       </div>
     </div>
