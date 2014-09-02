@@ -13,6 +13,8 @@
       sVimGlobal.browserWindows = safari.application.browserWindows;
       // Set path to sVimrc.html
       sVimGlobal.sVimrcPageUrl = safari.extension.baseURI + "sVimrc.html"
+      // Set path to help
+      sVimGlobal.helpUrl = "https://github.com/flipxfx/sVim#svim-help";
       // Define commands that can be run
       sVimGlobal.commands = {
         // Open Safari reader if possible
@@ -22,24 +24,7 @@
 
         // Show sVimrc page
         showsVimrc: function() {
-          // Go to an open sVimrc tab
-          var browserWindows = safari.application.browserWindows;
-          for (var j = 0; j < browserWindows.length; j++) {
-            var tabs = browserWindows[j].tabs;
-            for (var i = 0; i < tabs.length; i++) {
-              if (tabs[i].url == sVimGlobal.sVimrcPageUrl) {
-                tabs[i].browserWindow.activate();
-                tabs[i].activate();
-                return;
-              }
-            }
-          }
-
-          // If not tab is open with sVimrc then open a new tab
-          var newTab = safari.application.activeBrowserWindow.openTab();
-          newTab.url = sVimGlobal.sVimrcPageUrl;
-          newTab.browserWindow.activate();
-          newTab.activate();
+          sVimGlobal.commands.showUrl(sVimGlobal.sVimrcPageUrl);
         },
 
         // Load sVimrc
@@ -92,24 +77,7 @@
 
         // Open help page in new tab
         help: function() {
-          // Go to an open help tab
-          var browserWindows = safari.application.browserWindows;
-          for (var j = 0; j < browserWindows.length; j++) {
-            var tabs = browserWindows[j].tabs;
-            for (var i = 0; i < tabs.length; i++) {
-              if (tabs[i].url == sVimGlobal.settings.helpurl) {
-                tabs[i].browserWindow.activate();
-                tabs[i].activate();
-                return;
-              }
-            }
-          }
-
-          // If not tab is open with sVimrc then open a new tab
-          var newTab = safari.application.activeBrowserWindow.openTab();
-          newTab.url = sVimGlobal.settings.helpurl;
-          newTab.browserWindow.activate();
-          newTab.activate();
+          sVimGlobal.commands.showUrl(sVimGlobal.helpUrl);
         },
 
         // Navigate to the next tab
@@ -255,6 +223,30 @@
 
           var newTab = safari.application.activeBrowserWindow.openTab("background", tabs.indexOf(tab) + 1);
           newTab.url = url;
+        },
+
+        // Show tab of given url or open new tab with url
+        showUrl: function(url) {
+          if (typeof url !== "undefined") {
+            // Go to the first tab found at the url
+            var browserWindows = safari.application.browserWindows;
+            for (var j = 0; j < browserWindows.length; j++) {
+              var tabs = browserWindows[j].tabs;
+              for (var i = 0; i < tabs.length; i++) {
+                if (tabs[i].url == url) {
+                  tabs[i].browserWindow.activate();
+                  tabs[i].activate();
+                  return;
+                }
+              }
+            }
+
+            // If url not in any tabs, then open url in a new tab
+            var newTab = safari.application.activeBrowserWindow.openTab();
+            newTab.url = url;
+            newTab.browserWindow.activate();
+            newTab.activate();
+          }
         },
 
         // Move current tab left
@@ -405,9 +397,6 @@
           "shift+f"       : "createTabbedHint",
           //FIXX "ctrl+shift+f"  : "createActiveTabbedHint"
         };
-
-        // Other private settings
-        sVimGlobal.settings.helpurl = "https://github.com/flipxfx/sVim#svim-help";
       };
 
       // Loads custom settings
@@ -461,7 +450,7 @@
                 var setting = match[1];
                 var settingOption = match[2];
                 var value = JSON.parse(match[3].trim());
-                var privateSettings = ["shortcuts", "helpurl"];
+                var privateSettings = ["shortcuts"];
                 // Set the setting according to the setting type (array, number, string, object etc.)
                 if (sVimGlobal.settings[setting] != undefined && privateSettings.indexOf(setting) == -1) {
                   switch (typeof sVimGlobal.settings[setting]) {
