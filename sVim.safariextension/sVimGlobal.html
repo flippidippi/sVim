@@ -209,7 +209,7 @@
         newTab: function(url) {
           var tabs = safari.application.activeBrowserWindow.tabs;
           var tab = safari.application.activeBrowserWindow.activeTab;
-          if (typeof url === "undefined") url = sVimGlobal.settings.newtaburl;
+          if (typeof url == "undefined") url = sVimGlobal.settings.newtaburl;
 
           var newTab = safari.application.activeBrowserWindow.openTab("foreground", tabs.indexOf(tab) + 1);
           newTab.url = url;
@@ -219,7 +219,7 @@
         newTabBackground: function(url) {
           var tabs = safari.application.activeBrowserWindow.tabs;
           var tab = safari.application.activeBrowserWindow.activeTab;
-          if (typeof url === "undefined") url = sVimGlobal.settings.newtaburl;
+          if (typeof url == "undefined") url = sVimGlobal.settings.newtaburl;
 
           var newTab = safari.application.activeBrowserWindow.openTab("background", tabs.indexOf(tab) + 1);
           newTab.url = url;
@@ -275,7 +275,7 @@
 
         // Open new window
         newWindow: function(url) {
-          if (typeof url === "undefined") url = sVimGlobal.settings.newtaburl;
+          if (typeof url == "undefined") url = sVimGlobal.settings.newtaburl;
 
           safari.application.openBrowserWindow();
           safari.application.activeBrowserWindow.activeTab.url = url;
@@ -397,6 +397,9 @@
           "shift+f"       : "createTabbedHint",
           //FIXX "ctrl+shift+f"  : "createActiveTabbedHint"
         };
+
+        // Other private settings
+        sVimGlobal.settings.paused = localStorage["sVimPaused"] == "true";
       };
 
       // Loads custom settings
@@ -450,7 +453,7 @@
                 var setting = match[1];
                 var settingOption = match[2];
                 var value = JSON.parse(match[3].trim());
-                var privateSettings = ["shortcuts"];
+                var privateSettings = ["shortcuts", "paused"];
                 // Set the setting according to the setting type (array, number, string, object etc.)
                 if (sVimGlobal.settings[setting] != undefined && privateSettings.indexOf(setting) == -1) {
                   switch (typeof sVimGlobal.settings[setting]) {
@@ -631,9 +634,26 @@
         }
       }, true);
 
-      // Catch command from toolbar menu
+      // Catch validate command from toolbar menu
+      safari.application.addEventListener("validate", function(event) {
+        // Make sure menu item states are correct
+        if (event.target.identifier == "toolbarMenuPause") {
+          event.target.checkedState = localStorage["sVimPaused"] == "true";
+        }
+        else if (event.target.identifier != "toolbar") {
+          event.target.checkedState = 0;
+        }
+      }, true);
+
+      // Catch command command from toolbar menu
       safari.application.addEventListener("command", function(event) {
+        // Run command from menu
         switch (event.command) {
+          case "pause":
+            localStorage["sVimPaused"] = localStorage["sVimPaused"] == "true" ? "false" : "true";
+            sVimGlobal.settings.paused = localStorage["sVimPaused"] == "true";
+            sVimGlobal.sendUpdatedSettings();
+          break;
           case "showsVimrc":
             sVimGlobal.commands.showsVimrc();
           break;

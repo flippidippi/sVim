@@ -289,7 +289,7 @@ sVimTab.bind = function() {
   document.removeEventListener("keydown", sVimTab.stopPropagation);
 
   // Check blacklist and return if on the blacklist
-  if (sVimTab.checkBlacklist()) {
+  if (sVimTab.settings.paused || sVimTab.checkBlacklist()) {
     return;
   }
 
@@ -447,7 +447,7 @@ safari.self.tab.dispatchMessage("sendSettings");
 
 // Catch commands from global
 safari.self.addEventListener("message", function(event) {
-  if (event.name === "settings") {
+  if (event.name == "settings") {
     sVimTab.settings = event.message;
     sVimTab.bind();
   }

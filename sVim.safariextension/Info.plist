@@ -33,6 +33,22 @@
 						<key>Checked State</key>
 						<real>0.0</real>
 						<key>Command</key>
+						<string>pause</string>
+						<key>Identifier</key>
+						<string>toolbarMenuPause</string>
+						<key>Title</key>
+						<string>Pause sVim</string>
+					</dict>
+					<dict>
+						<key>Identifier</key>
+						<string>toolbarMenuSeparator</string>
+						<key>Separator</key>
+						<true/>
+					</dict>
+					<dict>
+						<key>Checked State</key>
+						<real>0.0</real>
+						<key>Command</key>
 						<string>showsVimrc</string>
 						<key>Identifier</key>
 						<string>toolbarMenuShowsVimrc</string>
@@ -45,7 +61,7 @@
 						<key>Command</key>
 						<string>help</string>
 						<key>Identifier</key>
-						<string>toolbarMenuShowHelp</string>
+						<string>toolbarMenuHelp</string>
 						<key>Title</key>
 						<string>Show Help</string>
 					</dict>
