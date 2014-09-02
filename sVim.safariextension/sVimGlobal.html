@@ -87,12 +87,7 @@
           sVimGlobal.commands.loadSettings();
 
           // Send updated settings to each tab
-          var tabs = safari.application.activeBrowserWindow.tabs;
-          for (var i = 0; i < tabs.length; i++) {
-            if (tabs[i].url != sVimGlobal.sVimrcPageUrl) {
-              sVimGlobal.commands["sendSettings"](tabs[i]);
-            }
-          }
+          sVimGlobal.sendUpdatedSettings();
         },
 
         // Open help page in new tab
@@ -541,6 +536,17 @@
         }
 
         return successful;
+      };
+
+      // Send settings updates to all tabs
+      sVimGlobal.sendUpdatedSettings = function() {
+        var browserWindows = safari.application.browserWindows;
+        for (var j = 0; j < browserWindows.length; j++) {
+          var tabs = browserWindows[j].tabs;
+          for (var i = 0; i < tabs.length; i++) {
+            sVimGlobal.commands["sendSettings"](tabs[i]);
+          }
+        }
       };
 
       // Load sVimrc and settings at start

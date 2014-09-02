@@ -99,18 +99,15 @@
 
       window.onload = function() {
         // Create rc editor
-        var rcEditor = ace.edit("rc");
-        rcEditor.setTheme("ace/theme/solarized_light");
-        rcEditor.setShowPrintMargin(false);
-        // Create css editor
-        var cssEditor = ace.edit("css");
-        cssEditor.setTheme("ace/theme/solarized_light");
-        cssEditor.setShowPrintMargin(false);
-        cssEditor.getSession().setMode("ace/mode/css");
+        sVimrc.rcEditor = ace.edit("rc");
+        sVimrc.rcEditor.setTheme("ace/theme/solarized_light");
+        sVimrc.rcEditor.setShowPrintMargin(false);
 
-        // Add sVimrc Mousetrap bindings
-        Mousetrap.bindGlobal("command+s", function() { sVimrc.savesVimrc(); }, "keydown");
-        Mousetrap.bindGlobal("ctrl+w", function() { sVimrc.switchEditor(); }, "keydown");
+        // Create css editor
+        sVimrc.cssEditor = ace.edit("css");
+        sVimrc.cssEditor.setTheme("ace/theme/solarized_light");
+        sVimrc.cssEditor.setShowPrintMargin(false);
+        sVimrc.cssEditor.getSession().setMode("ace/mode/css");
 
         // Get page elements
         sVimrc.rc = document.getElementById("rc");
@@ -124,11 +121,24 @@
         sVimrc.message = document.getElementById("message");
 
         // Get element heights to help adjust editor heights
-        var optionsHeight = document.getElementsByClassName("optionsWrapper")[0].offsetHeight;
-        var topHeight = document.getElementById("top").offsetHeight;
+        sVimrc.optionsHeight = document.getElementsByClassName("optionsWrapper")[0].offsetHeight;
+        sVimrc.topHeight = document.getElementById("top").offsetHeight;
 
         // Timeout helper
         sVimrc.messageTimeout = null;
+
+        // Add sVimrc Mousetrap bindings
+        sVimrc.addShorcuts = function() {
+          Mousetrap.bindGlobal("command+s", function() { sVimrc.savesVimrc(); }, "keydown");
+          Mousetrap.bindGlobal("ctrl+w", function() { sVimrc.switchEditor(); }, "keydown");
+        };
+
+        // Insure on Mousetrap reset to reapply sVimrc Mousetrap bindings
+        var mousetrapReset = Mousetrap.reset;
+        Mousetrap.reset = function(){
+          mousetrapReset();
+          sVimrc.addShorcuts();
+        };
 
         // On window resize, set editor heights
         window.onresize = function(event) {
@@ -139,14 +149,14 @@
         sVimrc.setEditorCss = function() {
           var height = 0;
           if (window.innerWidth < 1200) {
-            height = ((window.innerHeight - topHeight - (optionsHeight * 2)) / 2) - 5 + "px";
+            height = ((window.innerHeight - sVimrc.topHeight - (sVimrc.optionsHeight * 2)) / 2) - 5 + "px";
             sVimrc.rcWrapper.style.cssFloat = "none";
             sVimrc.rcWrapper.style.width = "100%";
             sVimrc.cssWrapper.style.cssFloat = "none";
             sVimrc.cssWrapper.style.width = "100%";
           }
           else {
-            height = (window.innerHeight - topHeight - optionsHeight) - 10 + "px";
+            height = (window.innerHeight - sVimrc.topHeight - sVimrc.optionsHeight) - 10 + "px";
             sVimrc.rcWrapper.style.cssFloat = "left";
             sVimrc.rcWrapper.style.width = "49.9%";
             sVimrc.cssWrapper.style.cssFloat = "right";
@@ -169,24 +179,27 @@
 
         // Bind the inputs to values
         sVimrc.bind = function() {
-          rcEditor.session.setValue(sVimrc.sVimrc.rc);
+          sVimrc.rcEditor.session.setValue(sVimrc.sVimrc.rc);
           sVimrc.rcGistId.value = sVimrc.sVimrc.rcGistId;
-          cssEditor.session.setValue(sVimrc.sVimrc.css);
+          sVimrc.cssEditor.session.setValue(sVimrc.sVimrc.css);
           sVimrc.cssGistId.value = sVimrc.sVimrc.cssGistId;
 
-          // Local storage
+          // Use local storage to set Vim Mode
           sVimrc.vimModeCheckbox.checked = !(localStorage["sVimrcVimMode"] == "true");
           sVimrc.changeVimMode();
 
           // Set editor heights
           sVimrc.setEditorCss();
+
+          // Add sVimrc shortcuts
+          sVimrc.addShorcuts();
         };
 
         // Save sVimrc values
         sVimrc.savesVimrc = function() {
-          sVimrc.sVimrc.rc = rcEditor.session.getValue().trim();
+          sVimrc.sVimrc.rc = sVimrc.rcEditor.session.getValue().trim();
           sVimrc.sVimrc.rcGistId = sVimrc.rcGistId.value.trim();
-          sVimrc.sVimrc.css = cssEditor.session.getValue().trim();
+          sVimrc.sVimrc.css = sVimrc.cssEditor.session.getValue().trim();
           sVimrc.sVimrc.cssGistId = sVimrc.cssGistId.value.trim();
           safari.self.tab.dispatchMessage("savesVimrc", sVimrc.sVimrc);
 
@@ -211,7 +224,7 @@
                   if (files.hasOwnProperty(file)) {
                     var content = files[file].content;
                     if (content) {
-                      rcEditor.session.setValue(content);
+                      sVimrc.rcEditor.session.setValue(content);
                       break;
                     }
                   }
@@ -238,7 +251,7 @@
                   if (files.hasOwnProperty(file)) {
                     var content = files[file].content;
                     if (content) {
-                      cssEditor.session.setValue(content);
+                      sVimrc.cssEditor.session.setValue(content);
                       break;
                     }
                   }
@@ -255,7 +268,7 @@
 
         // Revert sVimrc to original
         sVimrc.revertRc = function() {
-          rcEditor.session.setValue("");
+          sVimrc.rcEditor.session.setValue("");
         };
 
         // Revert sVimcss to original
@@ -264,7 +277,7 @@
           xhr.onreadystatechange = function () {
             if (xhr.readyState == 4) {
               if (xhr.status == 200 || xhr.status == 0) {
-                cssEditor.session.setValue(xhr.responseText.trim());
+                sVimrc.cssEditor.session.setValue(xhr.responseText.trim());
               }
             }
           }
@@ -275,15 +288,15 @@
         // Switch vim mode in editors
         sVimrc.changeVimMode = function() {
           if (sVimrc.vimModeCheckbox.checked) {
-            rcEditor.setKeyboardHandler("");
-            cssEditor.setKeyboardHandler("");
+            sVimrc.rcEditor.setKeyboardHandler("");
+            sVimrc.cssEditor.setKeyboardHandler("");
             localStorage["sVimrcVimMode"] = false;
             sVimrc.vimModeCheckbox.checked = false;
             sVimrc.vimModeButton.value = "Vim Mode Off";
           }
           else {
-            rcEditor.setKeyboardHandler("ace/keyboard/vim");
-            cssEditor.setKeyboardHandler("ace/keyboard/vim");
+            sVimrc.rcEditor.setKeyboardHandler("ace/keyboard/vim");
+            sVimrc.cssEditor.setKeyboardHandler("ace/keyboard/vim");
             localStorage["sVimrcVimMode"] = true;
             sVimrc.vimModeCheckbox.checked = true;
             sVimrc.vimModeButton.value = "Vim Mode On";
