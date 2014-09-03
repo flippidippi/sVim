@@ -1,9 +1,12 @@
 ![sVim](banner.png)
 
-Safari extension with shortcuts similar to Vim.
-Functionality will mostly follow the Chrome extension [cVim](https://github.com/1995eaton/chromium-vim).
+sVim is a Safari extension with shortcuts similar to Vim.
+The functionality of sVim will mostly follow the Chrome extension [cVim](https://github.com/1995eaton/chromium-vim).
 
-# [Download sVim](https://github.com/flipxfx/sVim/releases/latest)
+# Get sVim
+- Download the [latest release](https://github.com/flipxfx/sVim/releases/latest)
+- The extension will update via Safari Extension Updates
+- Releases and release notes are all uploaded to Github on the [releases page](https://github.com/flipxfx/sVim/releases)
 
 # sVim Help
 
