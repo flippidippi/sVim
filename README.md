@@ -1,4 +1,4 @@
-![sVim](icon.png)
+![sVim](banner.png)
 
 Safari extension with shortcuts similar to Vim.
 Functionality will mostly follow the Chrome extension [cVim](https://github.com/1995eaton/chromium-vim).
