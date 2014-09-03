@@ -5,8 +5,8 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 
 # Get sVim
 - Download the [latest release](https://github.com/flipxfx/sVim/releases/latest)
-- The extension will update via Safari Extension Updates
 - Releases and release notes are all uploaded to Github on the [releases page](https://github.com/flipxfx/sVim/releases)
+- The extension will update via Safari Extension Updates
 
 # sVim Help
 
