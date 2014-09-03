@@ -10,11 +10,11 @@
         <key>Developer Identifier</key>
         <string>8PHST8UEB7</string>
         <key>CFBundleVersion</key>
-        <string>102</string>
+        <string>103</string>
         <key>CFBundleShortVersionString</key>
-        <string>1.0.2</string>
+        <string>1.0.3</string>
         <key>URL</key>
-        <string>https://github.com/flipxfx/sVim/releases/download/1.0.2/sVim.safariextz</string>
+        <string>https://github.com/flipxfx/sVim/releases/download/1.0.3/sVim.safariextz</string>
       </dict>
     </array>
   </dict>
