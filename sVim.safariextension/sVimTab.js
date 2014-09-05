@@ -6,78 +6,78 @@ sVimTab.settings = {};
 // Indicates the tab mode
 sVimTab.mode = "normal";
 // Indicates if window is top
-sVimTab.topWindow = (window.top === window);
+sVimTab.topWindow = window.top === window;
 // Indicates the top domain
-sVimTab.topDomain = (!sVimTab.topWindow && window.location.ancestorOrigins) ? window.location.ancestorOrigins[0].match(/:\/\/(.*)/)[1] : window.location.hostname;
+sVimTab.topDomain = !sVimTab.topWindow && window.location.ancestorOrigins ? window.location.ancestorOrigins[0].match(/:\/\/(.*)/)[1] : window.location.hostname;
 // Indicates the top url
-sVimTab.topUrl = (!sVimTab.topWindow && document.referrer) ? document.referrer : window.location.href;
+sVimTab.topUrl = !sVimTab.topWindow && document.referrer ? document.referrer : window.location.href;
 // Define commands that can be run
 sVimTab.commands = {
   // Scroll down
   scrollDown: function() {
-    sVimTab.scrollBy(0, sVimTab.settings.scrollstep);
+    sVimHelper.scrollBy(0, sVimTab.settings.scrollstep);
   },
 
   // Scroll up
   scrollUp: function() {
-    sVimTab.scrollBy(0, -sVimTab.settings.scrollstep);
+    sVimHelper.scrollBy(0, -sVimTab.settings.scrollstep);
   },
 
   // Scroll left
   scrollLeft: function() {
-    sVimTab.scrollBy(-sVimTab.settings.scrollstep, 0);
+    sVimHelper.scrollBy(-sVimTab.settings.scrollstep, 0);
   },
 
   // Scroll right
   scrollRight: function() {
-    sVimTab.scrollBy(sVimTab.settings.scrollstep, 0);
+    sVimHelper.scrollBy(sVimTab.settings.scrollstep, 0);
   },
 
   // Scroll half-page down
   scrollPageDown: function() {
-    sVimTab.scrollBy(0, window.innerHeight / 2);
+    sVimHelper.scrollBy(0, window.innerHeight / 2);
   },
 
   // Scroll half-page up
   scrollPageUp: function() {
-    sVimTab.scrollBy(0, -window.innerHeight / 2);
+    sVimHelper.scrollBy(0, -window.innerHeight / 2);
   },
 
   // Scroll full-page down
   scrollFullPageDown: function() {
-    sVimTab.scrollBy(0, window.innerHeight * (sVimTab.settings.fullpagescrollpercent / 100));
+    sVimHelper.scrollBy(0, window.innerHeight * (sVimTab.settings.fullpagescrollpercent / 100));
   },
 
   // Scroll full-page up
   scrollFullPageUp: function() {
-    sVimTab.scrollBy(0, -window.innerHeight * (sVimTab.settings.fullpagescrollpercent / 100));
+    sVimHelper.scrollBy(0, -window.innerHeight * (sVimTab.settings.fullpagescrollpercent / 100));
   },
 
   // Scroll to bottom of the page
   scrollToBottom: function() {
-    sVimTab.scrollBy(0, (document.body.scrollHeight - window.pageYOffset - window.innerHeight) * 1.1);
+    sVimHelper.scrollBy(0, (document.body.scrollHeight - window.pageYOffset - window.innerHeight) * 1.1);
   },
 
   // Scroll to top of the page
   scrollToTop: function() {
-    sVimTab.scrollBy(0, -window.pageYOffset * 1.1);
+    sVimHelper.scrollBy(0, -window.pageYOffset * 1.1);
   },
 
   // Scroll to the left of the page
   scrollToLeft: function() {
-    sVimTab.scrollBy(-window.pageXOffset - 30, 0);
+    sVimHelper.scrollBy(-window.pageXOffset - 30, 0);
   },
 
   // Scroll to the right of the page
   scrollToRight: function() {
-    sVimTab.scrollBy(document.body.scrollWidth - window.pageXOffset - window.innerWidth + 30, 0);
+    sVimHelper.scrollBy(document.body.scrollWidth - window.pageXOffset - window.innerWidth + 30, 0);
   },
 
   // Go to the first input box
   goToInput: function() {
     var inputs = document.querySelectorAll("input,textarea");
     for (var i = 0; i < inputs.length; i++) {
-      if (!inputs[i].readonly != undefined && inputs[i].type != "hidden" && inputs[i].disabled != true && inputs[i].style.display != "none") {
+      if (!inputs[i].readonly != undefined && inputs[i].type != "hidden" && inputs[i].disabled != true && inputs[i].style.display != "none" && sVimHelper.isElementInView(inputs[i])) {
         inputs[i].focus();
         return;
       }
@@ -344,102 +344,12 @@ sVimTab.checkBlacklist = function() {
     if (!blacklist.length) {
       continue;
     }
-    if (sVimTab.matchLocation(document.location, blacklist[0])) {
+    if (sVimHelper.matchLocation(document.location, blacklist[0])) {
       return true;
     }
   }
 
   return false;
-};
-
-// Checks if location @matches the pattern (https://github.com/1995eaton/chromium-vim/blob/master/content_scripts/utils.js)
-sVimTab.matchLocation = function(location, pattern) {
-  if (typeof pattern !== "string" || !pattern.trim()) {
-    return false;
-  }
-
-  var protocol = (pattern.match(/.*:\/\//) || [""])[0].slice(0, -2);
-  var hostname;
-  var path;
-  var pathMatch;
-  var hostMatch;
-
-  if (/\*\*/.test(pattern)) {
-    console.error("sVim - Invalid pattern: " + pattern);
-    return false;
-  }
-
-  if (!protocol.length) {
-    console.error("sVim - Invalid protocol in pattern: ", pattern);
-    return false;
-  }
-
-  pattern = pattern.replace(/.*:\/\//, "");
-  if (protocol !== "*:" && location.protocol !== protocol) {
-    return false;
-  }
-
-  if (location.protocol !== "file:") {
-    hostname = pattern.match(/^[^\/]+\//g);
-    if (!hostname) {
-      console.error("sVim - Invalid host in pattern: ", pattern);
-      return false;
-    }
-    var origHostname = hostname;
-    hostname = hostname[0].slice(0, -1).replace(/([.])/g, "\\$1").replace(/\*/g, ".*");
-    hostMatch = location.hostname.match(new RegExp(hostname, "i"));
-    if (!hostMatch || hostMatch[0].length !== location.hostname.length) {
-      return false;
-    }
-    pattern = "/" + pattern.slice(origHostname[0].length);
-  }
-
-  if (pattern.length) {
-    path = pattern.replace(/([.&\\\/\(\)\[\]!?])/g, "\\$1").replace(/\*/g, ".*");
-    pathMatch = location.pathname.match(new RegExp(path));
-    if (!pathMatch || pathMatch[0].length !== location.pathname.length) {
-      return false;
-    }
-  }
-
-  return true;
-};
-
-// Scroll by, smooth or not
-sVimTab.scrollBy = function(x, y) {
-  // If smooth scroll is off then use regular scroll
-  if (!sVimTab.settings.smoothscroll) {
-    scrollBy(x, y);
-    return;
-  }
-
-  // Smooth scroll
-  var i = 0;
-  var delta = 0;
-
-  // Ease function
-  function easeOutExpo(t, b, c, d) {
-    return c * (-Math.pow(2, -10 * t / d ) + 1 ) + b;
-  }
-
-  // Animate the scroll
-  function animLoop() {
-    if (y) {
-      window.scrollBy(0, Math.round(easeOutExpo(i, 0, y, sVimTab.settings.scrollduration) - delta));
-    } else {
-      window.scrollBy(Math.round(easeOutExpo(i, 0, x, sVimTab.settings.scrollduration) - delta), 0);
-    }
-
-    if (i < sVimTab.settings.scrollduration) {
-      window.requestAnimationFrame(animLoop);
-    }
-
-    delta = easeOutExpo(i, 0, (x || y), sVimTab.settings.scrollduration);
-    i += 1;
-  }
-
-  // Start scroll
-  animLoop();
 };
 
 // Init sVimTab

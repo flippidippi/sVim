@@ -95,9 +95,14 @@
 			<key>Start</key>
 			<array>
 				<string>mousetrap.js</string>
+				<string>sVimHelper.js</string>
 				<string>sVimHint.js</string>
 			</array>
 		</dict>
+		<key>Stylesheets</key>
+		<array>
+			<string>sVim.css</string>
+		</array>
 		<key>Whitelist</key>
 		<array>
 			<string>http://*/*</string>
