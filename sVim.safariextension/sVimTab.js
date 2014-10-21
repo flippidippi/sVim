@@ -76,14 +76,21 @@ sVimTab.commands = {
   // Go to the first input box
   goToInput: function() {
     var inputs = document.querySelectorAll("input,textarea");
-    for (var i = 0; i < inputs.length; i++) {
-      if (!inputs[i].readonly != undefined && inputs[i].type != "hidden" && inputs[i].disabled != true && inputs[i].style.display != "none" && sVimHelper.isElementInView(inputs[i])) {
-        inputs[i].focus();
-        return;
+    var focusIndex;
+
+    // Find and focus on the first input in view, if none then use first on the page
+    for (var i = 0, l = inputs.length; i < l; i++) {
+      if (sVimHelper.isElementInput(inputs[i]) && sVimHelper.isElementVisible(inputs[i])) {
+        if (sVimHelper.isElementInView(inputs[i])) {
+          focusIndex = i;
+          break;
+        }
+        else if (focusIndex == null) {
+          focusIndex = i;
+        }
       }
     }
-
-    return false;
+    inputs[focusIndex].focus();
   },
 
   // Reload the current tab
@@ -109,6 +116,11 @@ sVimTab.commands = {
   // Open Safari reader if possible
   openReader: function() {
     safari.self.tab.dispatchMessage("openReader");
+  },
+
+  // Close Safari reader if possible
+  closeReader: function() {
+    safari.self.tab.dispatchMessage("closeReader");
   },
 
   // Show sVimrc page
@@ -315,8 +327,7 @@ sVimTab.bind = function() {
 sVimTab.stopPropagation = function() {
   return function(e) {
     var element = document.activeElement;
-    if (sVimTab.mode == "normal" && e.keyCode != 27
-        && !(element != null && (element.tagName == "INPUT" || element.tagName == "SELECT" || element.tagName == "TEXTAREA" || (element.contentEditable && element.contentEditable == "true")))) {
+    if (sVimTab.mode == "normal" && e.keyCode != 27 && (element != null && !sVimHelper.isElementInput(element))) {
       e.stopPropagation();
     }
   };
@@ -324,11 +335,20 @@ sVimTab.stopPropagation = function() {
 
 // Run the command pressed, if possible in current mode
 sVimTab.runCommand = function(command) {
-  return function() {
+  return function(e) {
+    // Prevent default escape key (helps prevent exiting full screen mode)
+    if (e.keyCode == 27) {
+      if (sVimTab.settings.preventdefaultesc || sVimTab.mode != "normal") {
+        e.preventDefault();
+      }
+      if (sVimTab.mode == "normal") {
+        sVimTab.commands["closeReader"]();
+      }
+    }
+
     var element = document.activeElement;
     // Only run command if in normal mode or command is normalMode, and if active element is not insert mode of a vim editor
-    if ((sVimTab.mode == "normal" || command == "normalMode") &&
-      !(element != null && element.parentNode.className.indexOf("ace_editor") != -1 && element.parentNode.className.indexOf("insert-mode") != -1)) {
+    if ((sVimTab.mode == "normal" || command == "normalMode") && !(element != null && element.parentNode.className.indexOf("ace_editor") != -1 && element.parentNode.className.indexOf("insert-mode") != -1)) {
       // FIXX WHEN ":" implemented
       sVimTab.commands[command]();
       return command == "normalMode";

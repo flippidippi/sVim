@@ -107,20 +107,21 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
   - Add comment like `" This is a comment`.
 
 ### sVimrc Settings
-| Setting Name          | Description                                                                         | Type    | Default           |
-| ---                   | ---                                                                                 | ---     | ---               |
-| smoothscroll          | use smooth scrolling                                                                | boolean | true              |
-| fullpagescrollpercent | percent of the page to scroll by when using scrollFullPageUp and scrollFullPageDown | integer | 85                |
-| lastactivetablimit    | number of last active tabs to remember                                              | integer | 25                |
-| lastclosedtablimit    | number of closed tabs to remember                                                   | integer | 25                |
-| scrollduration        | duration of smooth scrolling                                                        | integer | 30                |
-| scrollstep            | amount of pixels scrolled when using scrollUp and scrollDown                        | integer | 60                |
-| zoomstep              | percent to zoom when using zoomPageIn and zoomPageOut                               | integer | 10                |
-| hintcharacters        | characters to be used in link hint mode                                             | string  | "asdfgqwertzxcvb" |
-| homeurl               | url to use as home page                                                             | string  | "topsites://"     |
-| mapleader             | <Leader> key                                                                        | string  | "\"               |
-| newtaburl             | url to use as the default new tab url                                               | string  | "topsites://"     |
-| blacklists            | disable sVim on the sites matching one of the patterns                              | array   | []                |
+| Setting Name          | Description                                                                                 | Type    | Default           |
+| ---                   | ---                                                                                         | ---     | ---               |
+| preventdefaultesc     | prevent escape from exiting full screen, if unset then only prevent when not in normal mode | boolean | true              |
+| smoothscroll          | use smooth scrolling                                                                        | boolean | true              |
+| fullpagescrollpercent | percent of the page to scroll by when using scrollFullPageUp and scrollFullPageDown         | integer | 85                |
+| lastactivetablimit    | number of last active tabs to remember                                                      | integer | 25                |
+| lastclosedtablimit    | number of closed tabs to remember                                                           | integer | 25                |
+| scrollduration        | duration of smooth scrolling                                                                | integer | 30                |
+| scrollstep            | amount of pixels scrolled when using scrollUp and scrollDown                                | integer | 60                |
+| zoomstep              | percent to zoom when using zoomPageIn and zoomPageOut                                       | integer | 10                |
+| hintcharacters        | characters to be used in link hint mode                                                     | string  | "asdfgqwertzxcvb" |
+| homeurl               | url to use as home page                                                                     | string  | "topsites://"     |
+| mapleader             | <Leader> key                                                                                | string  | "\"               |
+| newtaburl             | url to use as the default new tab url                                                       | string  | "topsites://"     |
+| blacklists            | disable sVim on the sites matching one of the patterns                                      | array   | []                |
 
 ### sVimrc Example
 ```viml

@@ -1,5 +1,37 @@
 // Create helper object
 var sVimHelper = {};
+
+// Determines if the element given is an input type
+sVimHelper.isElementInput = function(element) {
+  return (
+    (element.localName === "textarea" || element.localName === "input" || element.getAttribute("contenteditable") === "true") 
+    && !element.disabled 
+    && !/button|radio|file|image|checkbox|submit/i.test(element.getAttribute("type"))
+  );
+};
+
+// Determines if the element given is visible
+sVimHelper.isElementVisible = function(element) {
+  return (
+    element.offsetParent 
+    && !element.disabled 
+    && element.getAttribute("type") !== "hidden" 
+    && getComputedStyle(element).visibility !== "hidden" 
+    && element.getAttribute("display") !== "none"
+  );
+}
+
+// Determines if the element given is in the viewport
+sVimHelper.isElementInView = function(element) {
+  var rect = element.getClientRects()[0];
+  return (
+    rect.top + rect.height >= 0 
+    && rect.left + rect.width >= 0 
+    && rect.right - rect.width <= window.innerWidth 
+    && rect.top < window.innerHeight
+  );
+};
+
 // Scroll by, smooth or not
 sVimHelper.scrollBy = function(x, y) {
   // If smooth scroll is off then use regular scroll
@@ -35,12 +67,6 @@ sVimHelper.scrollBy = function(x, y) {
 
   // Start scroll
   animLoop();
-};
-
-// Determines if the element given is in the viewport
-sVimHelper.isElementInView = function(element) {
-  var rect = element.getClientRects()[0];
-  return rect.top + rect.height >= 0 && rect.left + rect.width >= 0 && rect.right - rect.width <= window.innerWidth && rect.top < window.innerHeight;
 };
 
 // Checks if location @matches the pattern (https://github.com/1995eaton/chromium-vim/blob/master/content_scripts/utils.js)

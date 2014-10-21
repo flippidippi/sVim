@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Phillip Lanclos</string>
 	<key>Builder Version</key>
-	<string>9537.78.2</string>
+	<string>10600.1.25</string>
 	<key>CFBundleDisplayName</key>
 	<string>sVim</string>
 	<key>CFBundleIdentifier</key>
@@ -112,6 +112,8 @@
 	</dict>
 	<key>Description</key>
 	<string>Vim shortcuts in Safari</string>
+	<key>DeveloperIdentifier</key>
+	<string>8PHST8UEB7</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>

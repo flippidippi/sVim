@@ -22,6 +22,11 @@
           safari.application.activeBrowserWindow.activeTab.reader.enter();
         },
 
+        // Close Safari reader if possible
+        closeReader: function() {
+          safari.application.activeBrowserWindow.activeTab.reader.exit();
+        },
+
         // Show sVimrc page
         showsVimrc: function() {
           sVimGlobal.commands.showUrl(sVimGlobal.sVimrcPageUrl);
@@ -320,6 +325,7 @@
         sVimGlobal.settings = {};
 
         // Load default settings
+        sVimGlobal.settings.preventdefaultesc     = true;
         sVimGlobal.settings.smoothscroll          = true;
         sVimGlobal.settings.fullpagescrollpercent = 85;
         sVimGlobal.settings.lastactivetablimit    = 25;
@@ -560,7 +566,7 @@
       // Catch message command from tab
       safari.application.addEventListener("message", function(event) {
         // Separate on settings that need event.target and settings that are sending a parameter
-        if (event.target instanceof SafariBrowserTab) {
+        //if (event.target instanceof SafariBrowserTab) {
           if (event.name == "sendSettings" || event.name == "sendsVimrc") {
             sVimGlobal.commands[event.name](event.target);
           }
@@ -570,7 +576,7 @@
           else {
             sVimGlobal.commands[event.name]();
           }
-        }
+        //}
       }, false);
 
       // Catch activate command from tab
