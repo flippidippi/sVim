@@ -4,6 +4,8 @@ sVim is a Safari extension with shortcuts similar to Vim.
 The functionality of sVim will mostly follow the Chrome extension [cVim](https://github.com/1995eaton/chromium-vim).
 
 # Get sVim
+
+[![Join the chat at https://gitter.im/flipxfx/sVim](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/flipxfx/sVim?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 - Download the [latest release](https://github.com/flipxfx/sVim/releases/latest)
 - Releases and release notes are all uploaded to Github on the [releases page](https://github.com/flipxfx/sVim/releases)
 - The extension will update via Safari Extension Updates
