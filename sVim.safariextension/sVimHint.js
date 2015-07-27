@@ -15,6 +15,8 @@ sVimHint.start = function(newTab) {
   var inputKey = "";
   var lastMatchHint = null;
   var k=0;
+  var hintStrings = [];
+  var elemCount = 0;
 
   function getAbsolutePosition( elem, html, body, inWidth, inHeight ){
     var style = getComputedStyle(elem,null);
@@ -31,20 +33,67 @@ sVimHint.start = function(newTab) {
 
   }
 
+  function numberToHintString(number, characterSet, numHintDigits) {
+    var base = characterSet.length;
+    var hintString = [];
+    var remainder = 0;
+    while (number > 0) {
+      remainder = number % base;
+      hintString.unshift(characterSet[remainder]);
+      number -= remainder;
+      number /= Math.floor(base);
+    }
+
+    // Pad the hint string we're returning so that it matches numHintDigits.
+    // Note: the loop body changes hintString.length, so the original length must be cached!
+    var hintStringLength = hintString.length;
+    for (var i = 0; i < numHintDigits - hintStringLength; i++) {
+      hintString.unshift(characterSet[0]);
+    }
+
+    return hintString.join("");
+  }
+
+  function buildHintStrings()
+  {
+    var digitsNeeded = Math.ceil(Math.log(elemCount) / Math.log(hintKeysLength));
+    var shortHintCount = Math.floor((Math.pow(hintKeysLength, digitsNeeded) - elemCount) / hintKeysLength);
+    var longHintCount = elemCount - shortHintCount;
+
+    if (digitsNeeded > 1) {
+      for (var i = 0; i < shortHintCount; i++) {
+        hintStrings.push(numberToHintString(i, hintKeys, digitsNeeded - 1));
+      }
+    }
+
+    var start = shortHintCount * hintKeysLength;
+    for (var i = start; i < start + longHintCount; i++) {
+      hintStrings.push(numberToHintString(i, hintKeys, digitsNeeded));
+    }
+
+    hintStrings = shuffleHints(hintStrings, hintKeysLength);
+  }
+
+  function shuffleHints(hints, characterSetLength) {
+    var buckets = [];
+    for (var i = 0; i < characterSetLength; i++) {
+      buckets.push([]);
+    }
+    for (var i = 0; i < hints.length; i++) {
+      buckets[i % buckets.length].push(hints[i]);
+    }
+    var result = [];
+    for (var i = 0; i < buckets.length; i++) {
+      result = result.concat(buckets[i]);
+    }
+    return result;
+  }
+
   function createText(num){
-    var text = "";
-    var l = hintKeysLength;
-    var iter = 0;
-    while( num >= 0 ){
-      var n = num;
-      num -= Math.pow(l, 1 + iter++ );
+    if (hintStrings.length == 0) {
+      buildHintStrings();
     }
-    for( var i=0; i<iter; i++ ){
-      var r = n % l;
-      n = Math.floor(n/l);
-      text = hintKeys.charAt(r)+text;
-    }
-    return text;
+    return hintStrings[num];
   }
 
   function getXPathElements(win){
@@ -54,6 +103,20 @@ sVimHint.start = function(newTab) {
       arr[i] = result.snapshotItem(i);
     }
     return arr;
+  }
+
+  function countElements(win)
+  {
+    var html = win.document.documentElement;
+    var body = win.document.body;
+    var inWidth = win.innerWidth;
+    var inHeight = win.innerHeight
+    var elems = getXPathElements(win);
+    elems.forEach(function(elem) {
+      var pos = getAbsolutePosition(elem, html, body, inWidth, inHeight );
+      if( pos == false ) return;
+      elemCount++;
+    });
   }
 
   function start(win){
@@ -100,6 +163,19 @@ sVimHint.start = function(newTab) {
     win.document.body.appendChild(df);
   }
 
+  function fireEvent(element,event) {
+     if (document.createEvent) {
+         // dispatch for firefox + others
+         var evt = document.createEvent("HTMLEvents");
+         evt.initEvent(event, true, true ); // event type,bubbling,cancelable
+         return !element.dispatchEvent(evt);
+     } else {
+         // dispatch for IE
+         var evt = document.createEventObject();
+         return element.fireEvent('on'+event,evt)
+     }
+  }
+
   function handle(event){
     var key = event.keyCode || event.charCode;
     if( key in keyMap === false ){
@@ -109,38 +185,25 @@ sVimHint.start = function(newTab) {
     var onkey = keyMap[key];
     switch(onkey){
       case "Enter":
-        if( lastMatchHint.element.type == "text" ){
-        event.preventDefault();
-        event.stopPropagation();
-      }
-      if (!newTab){
-        if (/https?:\/\//.test(lastMatchHint.element.href)) {
-          event.preventDefault();
-          event.stopPropagation();
-        sVimTab.commands.newTabBackground(lastMatchHint.element.href);
-        }
-      }
-      resetInput();
-      removeHints();
-
       case "Shift":
-        case "Ctrl":
-        case "Alt" : return;
+      case "Ctrl":
+      case "Alt":
+        return;
     }
     event.preventDefault();
     event.stopPropagation();
     switch(onkey){
       case "Bkspc":
-        case "Delete":
+      case "Delete":
         if( !inputKey ){
-        removeHints();
+          removeHints();
+          return;
+        }
+        resetInput();
         return;
-      }
-      resetInput();
-      return;
       case "Space":
         removeHints();
-      return;
+        return;
       default:
         inputKey += onkey;
     }
@@ -150,8 +213,22 @@ sVimHint.start = function(newTab) {
       inputKey += onkey;
     }
     lastMatchHint = hintElements[inputKey];
-    lastMatchHint.style.backgroundColor = hintColorFocused;
-    lastMatchHint.element.focus();
+    if (lastMatchHint)
+    {
+      lastMatchHint.style.backgroundColor = hintColorFocused;
+      var lastElement = lastMatchHint.element;
+      event.preventDefault();
+      event.stopPropagation();
+      resetInput();
+      removeHints();
+      lastElement.focus();
+      if (!newTab && /https?:\/\//.test(lastElement.href)) {
+        sVimTab.commands.newTabBackground(lastElement.href);
+      }
+      else {
+        fireEvent(lastElement, 'click');
+      }
+    }
   }
 
   function removeHints(){
@@ -196,8 +273,15 @@ sVimHint.start = function(newTab) {
 
     var frame = window.frames;
     if(!document.getElementsByTagName("frameset")[0]){
+      countElements(window);
       start(window);
     }else{
+      Array.prototype.forEach.call(frame, function(elem){
+        try{
+          countElements(window);
+        }catch(e){
+        }
+      },this);
       Array.prototype.forEach.call(frame, function(elem){
         try{
           start(elem);
