@@ -73,6 +73,7 @@
 
           // Send updated settings to each tab
           sVimGlobal.sendUpdatedSettings();
+          sVimGlobal.sendUpdatedrc();
         },
 
         // Open help page in new tab
@@ -537,6 +538,17 @@
           var tabs = browserWindows[j].tabs;
           for (var i = 0; i < tabs.length; i++) {
             sVimGlobal.commands["sendSettings"](tabs[i]);
+          }
+        }
+      };
+
+      // Send rc updates to all tabs
+      sVimGlobal.sendUpdatedrc = function() {
+        var browserWindows = safari.application.browserWindows;
+        for (var j = 0; j < browserWindows.length; j++) {
+          var tabs = browserWindows[j].tabs;
+          for (var i = 0; i < tabs.length; i++) {
+            sVimGlobal.commands["sendsVimrc"](tabs[i]);
           }
         }
       };
