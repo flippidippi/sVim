@@ -15,6 +15,8 @@ sVimHint.start = function(newTab) {
   var inputKey = "";
   var lastMatchHint = null;
   var k=0;
+  var hintClass = "sVimLinkHint";
+  var hintStyleId = "sVimLinkHintStyle";
 
   function getAbsolutePosition( elem, html, body, inWidth, inHeight ){
     var style = getComputedStyle(elem,null);
@@ -58,10 +60,17 @@ sVimHint.start = function(newTab) {
 
   function injectCSS(doc, css)
   {
-    var style = doc.createElement('style');
-    style.type = 'text/css';
-    style.innerHTML = css;
-    doc.getElementsByTagName('head')[0].appendChild(style);
+    var style = doc.getElementById(hintStyleId);
+    if (style) {
+      style.innerHTML = css;
+    }
+    else {
+      style = doc.createElement('style');
+      style.type = 'text/css';
+      style.id = hintStyleId;
+      style.innerHTML = css;
+      doc.getElementsByTagName('head')[0].appendChild(style);
+    }
   }
 
   function start(win){
@@ -88,7 +97,7 @@ sVimHint.start = function(newTab) {
       var hint = createText(k);
       var span = win.document.createElement("span");
       span.appendChild(document.createTextNode(hint));
-      span.className = "sVimLinkHint";
+      span.className = hintClass;
       var st = span.style;
       for( key in spanStyle ){
         st[key] = spanStyle[key];
