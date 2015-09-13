@@ -3,6 +3,8 @@ var sVimTab = {};
 //setTimeout(function(){
 // Settings passed in from global
 sVimTab.settings = {};
+// rc passed in from global
+sVimTab.sVimrc = {};
 // Indicates the tab mode
 sVimTab.mode = "normal";
 // Indicates if window is top
@@ -390,11 +392,15 @@ sVimTab.checkBlacklist = function() {
 
 // Init sVimTab
 safari.self.tab.dispatchMessage("sendSettings");
+safari.self.tab.dispatchMessage("sendsVimrc");
 
 // Catch commands from global
 safari.self.addEventListener("message", function(event) {
   if (event.name == "settings") {
     sVimTab.settings = event.message;
     sVimTab.bind();
+  }
+  else if (event.name == "sVimrc") {
+    sVimTab.sVimrc = event.message;
   }
 }, false);

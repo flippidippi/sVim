@@ -18,6 +18,8 @@ sVimHint.start = function(newTab) {
   var k=0;
   var hintStrings = [];
   var elemCount = 0;
+  var hintClass = "sVimLinkHint";
+  var hintStyleId = "sVimLinkHintStyle";
 
   function getAbsolutePosition( elem, html, body, inWidth, inHeight ){
     var style = getComputedStyle(elem,null);
@@ -118,6 +120,20 @@ sVimHint.start = function(newTab) {
       if( pos == false ) return;
       elemCount++;
     });
+
+  function injectCSS(doc, css)
+  {
+    var style = doc.getElementById(hintStyleId);
+    if (style) {
+      style.innerHTML = css;
+    }
+    else {
+      style = doc.createElement('style');
+      style.type = 'text/css';
+      style.id = hintStyleId;
+      style.innerHTML = css;
+      doc.getElementsByTagName('head')[0].appendChild(style);
+    }
   }
 
   function start(win){
@@ -133,14 +149,10 @@ sVimHint.start = function(newTab) {
     var spanStyle = {
       "position" : "absolute",
       "zIndex" : "214783647",
-      "color" : "#000",
-      "fontSize" : "10pxt",
-      "fontFamily" : "monospace",
-      "lineHeight" : "10pt",
-      "padding" : "0px",
-      "margin" : "0px",
-      "opacity" : "0.7"
     };
+
+    injectCSS(win.document, sVimTab.sVimrc.css);
+
     var elems = getXPathElements(win);
     elems.forEach(function(elem){
       var pos = getAbsolutePosition(elem, html, body, inWidth, inHeight );
@@ -148,6 +160,7 @@ sVimHint.start = function(newTab) {
       var hint = createText(k);
       var span = win.document.createElement("span");
       span.appendChild(document.createTextNode(hint));
+      span.className = hintClass;
       var st = span.style;
       for( key in spanStyle ){
         st[key] = spanStyle[key];
