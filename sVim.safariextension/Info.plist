@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Phillip Lanclos</string>
 	<key>Builder Version</key>
-	<string>10600.1.25</string>
+	<string>10600.1.25.1</string>
 	<key>CFBundleDisplayName</key>
 	<string>sVim</string>
 	<key>CFBundleIdentifier</key>

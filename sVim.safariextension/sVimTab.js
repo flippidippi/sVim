@@ -276,11 +276,15 @@ sVimTab.commands = {
       element.blur();
     }
     sVimTab.mode = "normal";
+    sVimTab.commandDiv.innerHTML = "-- NORMAL --";
+    sVimTab.commandDiv.style.display = "none";
   },
 
   // Enter insert mode
   insertMode: function() {
     sVimTab.mode = "insert";
+    sVimTab.commandDiv.innerHTML = "-- INSERT --";
+    sVimTab.commandDiv.style.display = "block";
   },
 
   // Open link in current tab
@@ -321,6 +325,18 @@ sVimTab.bind = function() {
       Mousetrap.bind(shortcut, sVimTab.runCommand(command), "keydown");
     }
   }
+
+  // Create command div
+  if (document.getElementById("sVim-command")) {
+    document.getElementById("sVim-command").parentNode.removeChild(document.getElementById("sVim-command"));
+  }
+  sVimTab.commandDiv = document.createElement("div");
+  sVimTab.commandDiv.id = "sVim-command";
+  sVimTab.commandDiv.style[sVimTab.settings.barposition] = "0"; 
+  document.body.appendChild(sVimTab.commandDiv);
+
+  // Default to normal mode
+  sVimTab.commands["normalMode"]();
 };
 
 // Prevent propagation for all keydown events if in normal mode, non-escape key is pressed or active element is input

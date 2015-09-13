@@ -1,5 +1,6 @@
 // Create hint object
 var sVimHint = {};
+
 // Start hint
 sVimHint.start = function(newTab) {
   var hintKeys = new String(sVimTab.settings.hintcharacters).toUpperCase();
