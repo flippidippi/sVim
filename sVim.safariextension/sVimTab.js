@@ -3,8 +3,6 @@ var sVimTab = {};
 //setTimeout(function(){
 // Settings passed in from global
 sVimTab.settings = {};
-// rc passed in from global
-sVimTab.sVimrc = {};
 // Indicates the tab mode
 sVimTab.mode = "normal";
 // Indicates if window is top
@@ -302,6 +300,19 @@ sVimTab.commands = {
 
 // Bind shortcuts
 sVimTab.bind = function() {
+  // Insert or update css
+  var style = document.getElementById("sVim-style");
+  if (style) {
+    style.innerHTML = sVimTab.settings.css;
+  }
+  else {
+    style = document.createElement("style");
+    style.type = "text/css";
+    style.id = "sVim-style";
+    style.innerHTML = sVimTab.settings.css;
+    document.getElementsByTagName("head")[0].appendChild(style);
+  }
+
   // Unbind current shortcuts and propagation
   Mousetrap.reset();
   document.removeEventListener("keydown", sVimTab.stopPropagation);
@@ -329,13 +340,12 @@ sVimTab.bind = function() {
   }
 
   // Create command div
-  if (document.getElementById("sVim-command")) {
-    document.getElementById("sVim-command").parentNode.removeChild(document.getElementById("sVim-command"));
+  if (!document.getElementById("sVim-command")) {
+    sVimTab.commandDiv = document.createElement("div");
+    sVimTab.commandDiv.id = "sVim-command";
+    sVimTab.commandDiv.style[sVimTab.settings.barposition] = "0";
+    document.body.appendChild(sVimTab.commandDiv);
   }
-  sVimTab.commandDiv = document.createElement("div");
-  sVimTab.commandDiv.id = "sVim-command";
-  sVimTab.commandDiv.style[sVimTab.settings.barposition] = "0"; 
-  document.body.appendChild(sVimTab.commandDiv);
 
   // Default to normal mode
   sVimTab.commands["normalMode"]();
@@ -392,15 +402,11 @@ sVimTab.checkBlacklist = function() {
 
 // Init sVimTab
 safari.self.tab.dispatchMessage("sendSettings");
-safari.self.tab.dispatchMessage("sendsVimrc");
 
 // Catch commands from global
 safari.self.addEventListener("message", function(event) {
   if (event.name == "settings") {
     sVimTab.settings = event.message;
     sVimTab.bind();
-  }
-  else if (event.name == "sVimrc") {
-    sVimTab.sVimrc = event.message;
   }
 }, false);

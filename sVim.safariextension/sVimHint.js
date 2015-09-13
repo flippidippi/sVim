@@ -5,21 +5,16 @@ var sVimHint = {};
 sVimHint.start = function(newTab) {
   var hintKeys = new String(sVimTab.settings.hintcharacters).toUpperCase();
   var xpath = "//a[@href]|//input[not(@type=\x22hidden\x22)]|//textarea|//select|//img[@onclick]|//button";
-  var hintColor = "\x23ffff00";
-  var hintColorForm = "\x2300ffff";
-  var hintColorFocused= "\x23ff00ff";
   var keyMap = {"8": "Bkspc", "46": "Delete", "32": "Space", "13":"Enter", "16": "Shift", "17": "Ctrl", "18": "Alt"};
 
   var hintKeysLength;
   var hintContainerId = "hintContainer";
-  var hintElements = [];
+  var hintElements = {};
   var inputKey = "";
   var lastMatchHint = null;
   var k=0;
   var hintStrings = [];
   var elemCount = 0;
-  var hintClass = "sVimLinkHint";
-  var hintStyleId = "sVimLinkHintStyle";
 
   function getAbsolutePosition( elem, html, body, inWidth, inHeight ){
     var style = getComputedStyle(elem,null);
@@ -120,20 +115,6 @@ sVimHint.start = function(newTab) {
       if( pos == false ) return;
       elemCount++;
     });
-
-  function injectCSS(doc, css)
-  {
-    var style = doc.getElementById(hintStyleId);
-    if (style) {
-      style.innerHTML = css;
-    }
-    else {
-      style = doc.createElement('style');
-      style.type = 'text/css';
-      style.id = hintStyleId;
-      style.innerHTML = css;
-      doc.getElementsByTagName('head')[0].appendChild(style);
-    }
   }
 
   function start(win){
@@ -149,9 +130,8 @@ sVimHint.start = function(newTab) {
     var spanStyle = {
       "position" : "absolute",
       "zIndex" : "214783647",
+      "margin": "0px"
     };
-
-    injectCSS(win.document, sVimTab.sVimrc.css);
 
     var elems = getXPathElements(win);
     elems.forEach(function(elem){
@@ -160,12 +140,14 @@ sVimHint.start = function(newTab) {
       var hint = createText(k);
       var span = win.document.createElement("span");
       span.appendChild(document.createTextNode(hint));
-      span.className = hintClass;
+      span.className = "sVim-hint";
       var st = span.style;
       for( key in spanStyle ){
         st[key] = spanStyle[key];
       }
-      st.backgroundColor = elem.hasAttribute("href") === true ? hintColor : hintColorForm;
+      if (elem.hasAttribute("href") !== true) {
+        span.classList.add("sVim-hint-form");
+      }
       st.left = Math.max(0,pos.left-8) + "px";
       st.top = Math.max(0,pos.top-8) + "px";
       hintElements[hint] = span;
@@ -209,11 +191,12 @@ sVimHint.start = function(newTab) {
     switch(onkey){
       case "Bkspc":
       case "Delete":
-        if( !inputKey ){
+        if (!inputKey){
           removeHints();
           return;
         }
         resetInput();
+        setFocused();
         return;
       case "Space":
         removeHints();
@@ -222,14 +205,14 @@ sVimHint.start = function(newTab) {
         inputKey += onkey;
     }
     blurHint();
-    if( inputKey in hintElements === false ){
+    if (inputKey in hintElements === false) {
       resetInput();
       inputKey += onkey;
     }
+    setFocused();
+
     lastMatchHint = hintElements[inputKey];
-    if (lastMatchHint)
-    {
-      lastMatchHint.style.backgroundColor = hintColorFocused;
+    if (lastMatchHint) {
       var lastElement = lastMatchHint.element;
       event.preventDefault();
       event.stopPropagation();
@@ -241,6 +224,17 @@ sVimHint.start = function(newTab) {
       }
       else {
         fireEvent(lastElement, 'click');
+      }
+    }
+  }
+
+  function setFocused() {
+    for (var key in hintElements) {
+      if (inputKey !== "" && key.indexOf(inputKey) === 0) {
+        hintElements[key].classList.add("sVim-hint-focused");
+      }
+      else {
+        hintElements[key].classList.remove("sVim-hint-focused");
       }
     }
   }
@@ -259,7 +253,9 @@ sVimHint.start = function(newTab) {
 
   function blurHint(){
     if(lastMatchHint){
-      lastMatchHint.style.backgroundColor  = lastMatchHint.element.hasAttribute("href")===true?hintColor:hintColorForm;
+      if (lastMatchHint.element.hasAttribute("href") !== true) {
+        span.classList.add("sVim-hint-form");
+      }
     }
   }
 

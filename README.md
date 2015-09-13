@@ -15,8 +15,8 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | Keyboard Command       | Description                                    | Mapping Name            |
 | ---                    | ---                                            | ---                     |
 | **Movement**           |                                                |                         |
-| "j", "s"               | scroll down                                    | scrollDown              |
-| "k", "w"               | scroll up                                      | scrollUp                |
+| "j"                    | scroll down                                    | scrollDown              |
+| "k"                    | scroll up                                      | scrollUp                |
 | "h"                    | scroll left                                    | scrollLeft              |
 | "l"                    | scroll right                                   | scrollRight             |
 | "d"                    | scroll half-page down                          | scrollPageDown          |

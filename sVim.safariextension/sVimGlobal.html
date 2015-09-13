@@ -78,7 +78,6 @@
 
           // Send updated settings to each tab
           sVimGlobal.sendUpdatedSettings();
-          sVimGlobal.sendUpdatedrc();
         },
 
         // Open help page in new tab
@@ -325,6 +324,9 @@
       sVimGlobal.loadDefaultSettings = function() {
         sVimGlobal.settings = {};
 
+        // Set css
+        sVimGlobal.settings.css = sVimGlobal.sVimrc.css;
+
         // Load default settings
         sVimGlobal.settings.preventdefaultesc     = true;
         sVimGlobal.settings.smoothscroll          = true;
@@ -345,9 +347,7 @@
         sVimGlobal.settings.shortcuts = {
           // Movement
           "j"             : "scrollDown",
-          "s"             : "scrollDown",
           "k"             : "scrollUp",
-          "w"             : "scrollUp",
           "h"             : "scrollLeft",
           "l"             : "scrollRight",
           "d"             : "scrollPageDown",
@@ -461,7 +461,7 @@
                 var setting = match[1];
                 var settingOption = match[2];
                 var value = JSON.parse(match[3].trim());
-                var privateSettings = ["shortcuts", "paused"];
+                var privateSettings = ["shortcuts", "paused", "css"];
                 // Set the setting according to the setting type (array, number, string, object etc.)
                 if (sVimGlobal.settings[setting] != undefined && privateSettings.indexOf(setting) == -1) {
                   switch (typeof sVimGlobal.settings[setting]) {
@@ -545,17 +545,6 @@
           var tabs = browserWindows[j].tabs;
           for (var i = 0; i < tabs.length; i++) {
             sVimGlobal.commands["sendSettings"](tabs[i]);
-          }
-        }
-      };
-
-      // Send rc updates to all tabs
-      sVimGlobal.sendUpdatedrc = function() {
-        var browserWindows = safari.application.browserWindows;
-        for (var j = 0; j < browserWindows.length; j++) {
-          var tabs = browserWindows[j].tabs;
-          for (var i = 0; i < tabs.length; i++) {
-            sVimGlobal.commands["sendsVimrc"](tabs[i]);
           }
         }
       };
