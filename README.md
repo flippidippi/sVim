@@ -33,7 +33,7 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | "z i"                  | zoom page in                                   | zoomPageIn              |
 | "z o"                  | zoom page out                                  | zoomPageOut             |
 | "z 0"                  | zoom page to original size                     | zoomOrig                |
-| "g r"                  | open Safari reader if possible                 | openReader              |
+| "g r"                  | toggle Safari reader if possible               | toggleReader            |
 | "g v"                  | show sVimrc page                               | showsVimrc              |
 | "g ?"                  | open help page in new tab                      | help                    |
 | **Tab Navigation**     |                                                |                         |
