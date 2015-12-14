@@ -60,3 +60,7 @@
   opacity: 1;
   font-weight: bold;
 }
+
+.sVim-hint.sVim-hint-hidden {
+  visibility: hidden;
+}

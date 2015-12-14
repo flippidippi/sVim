@@ -233,8 +233,12 @@ sVimHint.start = function(newTab) {
       if (inputKey !== "" && key.indexOf(inputKey) === 0) {
         hintElements[key].classList.add("sVim-hint-focused");
       }
+      else if (key.indexOf(inputKey) !== 0) {
+        hintElements[key].classList.add("sVim-hint-hidden"); 
+      }
       else {
         hintElements[key].classList.remove("sVim-hint-focused");
+        hintElements[key].classList.remove("sVim-hint-hidden"); 
       }
     }
   }
