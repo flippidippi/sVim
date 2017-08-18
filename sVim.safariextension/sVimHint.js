@@ -4,7 +4,7 @@ var sVimHint = {};
 // Start hint
 sVimHint.start = function(newTab) {
   var hintKeys = new String(sVimTab.settings.hintcharacters).toUpperCase();
-  var xpath = "//a[@href]|//input[not(@type=\x22hidden\x22)]|//textarea|//select|//img[@onclick]|//button";
+  var xpath = "//a|//input[not(@type=\x22hidden\x22)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]";
   var keyMap = {"8": "Bkspc", "46": "Delete", "32": "Space", "13":"Enter", "16": "Shift", "17": "Ctrl", "18": "Alt"};
 
   var hintKeysLength;
@@ -204,7 +204,6 @@ sVimHint.start = function(newTab) {
       default:
         inputKey += onkey;
     }
-    blurHint();
     if (inputKey in hintElements === false) {
       resetInput();
       inputKey += onkey;
@@ -251,17 +250,8 @@ sVimHint.start = function(newTab) {
     }, this);
   }
 
-  function blurHint(){
-    if(lastMatchHint){
-      if (lastMatchHint.element.hasAttribute("href") !== true) {
-        span.classList.add("sVim-hint-form");
-      }
-    }
-  }
-
   function resetInput(){
     inputKey = "";
-    blurHint();
     lastMatchHint = null;
   }
 
