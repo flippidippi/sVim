@@ -18,8 +18,12 @@
       // Define commands that can be run
       sVimGlobal.commands = {
         // Open Safari reader if possible
-        openReader: function() {
-          safari.application.activeBrowserWindow.activeTab.reader.enter();
+        toggleReader: function() {
+          if (safari.application.activeBrowserWindow.activeTab.reader.visible) {
+            safari.application.activeBrowserWindow.activeTab.reader.exit();
+          } else {
+            safari.application.activeBrowserWindow.activeTab.reader.enter();
+          }
         },
 
         // Close Safari reader if possible
@@ -365,7 +369,7 @@
           "z i"           : "zoomPageIn",
           "z o"           : "zoomPageOut",
           "z 0"           : "zoomOrig",
-          "g r"           : "openReader",
+          "g r"           : "toggleReader",
           "g v"           : "showsVimrc",
           "g ?"           : "help",
           // Tab Navigation

@@ -114,8 +114,8 @@ sVimTab.commands = {
   },
 
   // Open Safari reader if possible
-  openReader: function() {
-    safari.self.tab.dispatchMessage("openReader");
+  toggleReader: function() {
+    safari.self.tab.dispatchMessage("toggleReader");
   },
 
   // Close Safari reader if possible
