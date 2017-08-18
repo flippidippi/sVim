@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Phillip Lanclos</string>
 	<key>Builder Version</key>
-	<string>10600.8.9</string>
+	<string>12603.3.8</string>
 	<key>CFBundleDisplayName</key>
 	<string>sVim</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.4</string>
+	<string>1.0.5</string>
 	<key>CFBundleVersion</key>
 	<string>104</string>
 	<key>Chrome</key>
@@ -113,7 +113,7 @@
 	<key>Description</key>
 	<string>Vim shortcuts in Safari</string>
 	<key>DeveloperIdentifier</key>
-	<string>8PHST8UEB7</string>
+	<string>6Q2K7JYUZ6</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
