@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Phillip Lanclos</string>
 	<key>Builder Version</key>
-	<string>12603.3.8</string>
+	<string>12604.1.38.1.6</string>
 	<key>CFBundleDisplayName</key>
 	<string>sVim</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.5</string>
+	<string>1.0.6</string>
 	<key>CFBundleVersion</key>
-	<string>105</string>
+	<string>106</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
