@@ -195,7 +195,7 @@ sVimHint.start = function(newTab) {
           removeHints();
           return;
         }
-        resetInput();
+        inputKey = inputKey.slice(0, -1)
         setFocused();
         return;
       case "Space":
@@ -203,10 +203,6 @@ sVimHint.start = function(newTab) {
         return;
       default:
         inputKey += onkey;
-    }
-    if (inputKey in hintElements === false) {
-      resetInput();
-      inputKey += onkey;
     }
     setFocused();
 
