@@ -1,11 +1,13 @@
 // Create helper object
 var sVimHelper = {};
 
+var animationFrame
+
 // Determines if the element given is an input type
 sVimHelper.isElementInput = function(element) {
   return (
-    (element.localName === "textarea" || element.localName === "input" || element.getAttribute("contenteditable") === "true") 
-    && !element.disabled 
+    (element.localName === "textarea" || element.localName === "input" || element.getAttribute("contenteditable") === "true")
+    && !element.disabled
     && !/button|radio|file|image|checkbox|submit/i.test(element.getAttribute("type"))
   );
 };
@@ -13,10 +15,10 @@ sVimHelper.isElementInput = function(element) {
 // Determines if the element given is visible
 sVimHelper.isElementVisible = function(element) {
   return (
-    element.offsetParent 
-    && !element.disabled 
-    && element.getAttribute("type") !== "hidden" 
-    && getComputedStyle(element).visibility !== "hidden" 
+    element.offsetParent
+    && !element.disabled
+    && element.getAttribute("type") !== "hidden"
+    && getComputedStyle(element).visibility !== "hidden"
     && element.getAttribute("display") !== "none"
   );
 }
@@ -25,9 +27,9 @@ sVimHelper.isElementVisible = function(element) {
 sVimHelper.isElementInView = function(element) {
   var rect = element.getClientRects()[0];
   return (
-    rect.top + rect.height >= 0 
-    && rect.left + rect.width >= 0 
-    && rect.right - rect.width <= window.innerWidth 
+    rect.top + rect.height >= 0
+    && rect.left + rect.width >= 0
+    && rect.right - rect.width <= window.innerWidth
     && rect.top < window.innerHeight
   );
 };
@@ -39,6 +41,7 @@ sVimHelper.scrollBy = function(x, y) {
     scrollBy(x, y);
     return;
   }
+  window.cancelAnimationFrame(animationFrame)
 
   // Smooth scroll
   var i = 0;
@@ -58,7 +61,7 @@ sVimHelper.scrollBy = function(x, y) {
     }
 
     if (i < sVimTab.settings.scrollduration) {
-      window.requestAnimationFrame(animLoop);
+      animationFrame = window.requestAnimationFrame(animLoop);
     }
 
     delta = easeOutExpo(i, 0, (x || y), sVimTab.settings.scrollduration);
