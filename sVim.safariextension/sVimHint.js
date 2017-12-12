@@ -54,7 +54,7 @@ sVimHint.start = function(newTab) {
 
   function buildHintStrings()
   {
-    var digitsNeeded = Math.ceil(Math.log(elemCount) / Math.log(hintKeysLength));
+    var digitsNeeded = Math.ceil(Math.log(elemCount+1) / Math.log(hintKeysLength));
     var shortHintCount = Math.floor((Math.pow(hintKeysLength, digitsNeeded) - elemCount) / hintKeysLength);
     var longHintCount = elemCount - shortHintCount;
 
