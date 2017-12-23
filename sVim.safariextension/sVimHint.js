@@ -4,7 +4,7 @@ var sVimHint = {};
 // Start hint
 sVimHint.start = function(newTab) {
   var hintKeys = new String(sVimTab.settings.hintcharacters).toUpperCase();
-  var xpath = "//a|//input[not(@type=\x22hidden\x22)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]";
+  var xpath = "//a|//input[not(@type=\x22hidden\x22)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]|//summary";
   var keyMap = {"8": "Bkspc", "46": "Delete", "32": "Space", "13":"Enter", "16": "Shift", "17": "Ctrl", "18": "Alt"};
 
   var hintKeysLength;
@@ -54,7 +54,7 @@ sVimHint.start = function(newTab) {
 
   function buildHintStrings()
   {
-    var digitsNeeded = Math.ceil(Math.log(elemCount) / Math.log(hintKeysLength));
+    var digitsNeeded = Math.ceil(Math.log(elemCount+1) / Math.log(hintKeysLength));
     var shortHintCount = Math.floor((Math.pow(hintKeysLength, digitsNeeded) - elemCount) / hintKeysLength);
     var longHintCount = elemCount - shortHintCount;
 
@@ -195,7 +195,7 @@ sVimHint.start = function(newTab) {
           removeHints();
           return;
         }
-        resetInput();
+        inputKey = inputKey.slice(0, -1)
         setFocused();
         return;
       case "Space":
@@ -203,10 +203,6 @@ sVimHint.start = function(newTab) {
         return;
       default:
         inputKey += onkey;
-    }
-    if (inputKey in hintElements === false) {
-      resetInput();
-      inputKey += onkey;
     }
     setFocused();
 
