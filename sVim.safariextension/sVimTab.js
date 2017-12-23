@@ -327,9 +327,7 @@ sVimTab.bind = function() {
 
   // Bind shortcuts to commands
   for (var shortcut in sVimTab.settings.shortcuts) {
-    var command = sVimTab.settings.shortcuts[shortcut],
-      element = document.activeElement;
-
+    var command = sVimTab.settings.shortcuts[shortcut];
     // Replace <Leader>
     shortcut = shortcut.replace(/<[lL]eader>/g, sVimTab.settings.mapleader);
     // Bind going into normal mode even in textboxes
@@ -350,12 +348,7 @@ sVimTab.bind = function() {
   }
 
   // Default to normal mode
-  if (element && sVimHelper.isElementInput(element)) {
-    sVimTab.commands["insertMode"]();
-  }
-  else {
-    sVimTab.commands["normalMode"]();
-  }
+  sVimTab.commands["normalMode"]();
 };
 
 // Prevent propagation for all keydown events if in normal mode, non-escape key is pressed or active element is input
