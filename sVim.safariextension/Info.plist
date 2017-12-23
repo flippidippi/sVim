@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Phillip Lanclos</string>
 	<key>Builder Version</key>
-	<string>12604.1.38.1.6</string>
+	<string>13604.4.7.1.3</string>
 	<key>CFBundleDisplayName</key>
 	<string>sVim</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.6</string>
+	<string>1.0.7</string>
 	<key>CFBundleVersion</key>
-	<string>106</string>
+	<string>107</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Database Quota</key>
@@ -127,7 +127,7 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>http://github.com/flipxfx/sVim/raw/master/manifest.plist</string>
+	<string>http://github.com/flipxfx/sVim/rajkw/master/manifest.plist</string>
 	<key>Website</key>
 	<string>http://flipxfx.com</string>
 </dict>
