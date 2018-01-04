@@ -132,11 +132,7 @@ sVimHelper.search = function(urlOpener) {
   sVimTab.mode = "insert";
   var commandSpan = document.createElement('span');
   commandSpan.innerHTML = urlOpener.name + ": ";
-  commandSpan.style.all = 'inherit';
-  commandSpan.style.position = 'relative';
   var input = document.createElement('input');
-  input.style.all = 'inherit';
-  input.style.position = 'relative';
   input.value = '';
   sVimTab.commandDiv.innerHTML = '';
   sVimTab.commandDiv.appendChild(commandSpan);
