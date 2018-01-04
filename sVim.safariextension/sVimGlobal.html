@@ -628,6 +628,13 @@
         }
       }, true);
 
+      // Catch navigate event to focus on the new page.
+      safari.application.addEventListener("navigate", function(event) {
+        // Switching back and forth rapidly deselects search bar and is invisible.
+        sVimGlobal.commands.previousTab();
+        sVimGlobal.commands.nextTab();
+      }, true);
+
       // Catch close command from tab
       safari.application.addEventListener("close", function(event) {
         // Keep track of closed tabs
