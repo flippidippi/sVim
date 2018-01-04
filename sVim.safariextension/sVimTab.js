@@ -203,6 +203,22 @@ sVimTab.commands = {
     safari.self.tab.dispatchMessage("newTabBackground", url);
   },
 
+  // Open input, then search in new tab
+  searchInNewTab: function() {
+    var newTab = function(url){
+      safari.self.tab.dispatchMessage("newTab", url);
+    };
+    sVimHelper.search(newTab);
+  },
+
+  // Open input, then search in current tab
+  searchInTab: function() {
+    var open = function(url){
+      safari.self.tab.dispatchMessage("openUrl", url);      
+    };
+    sVimHelper.search(open);
+  },
+
   // Go back in history
   goBack: function() {
     history.back();
@@ -285,6 +301,11 @@ sVimTab.commands = {
     sVimTab.mode = "insert";
     sVimTab.commandDiv.innerHTML = "-- INSERT --";
     sVimTab.commandDiv.style.display = "block";
+  },
+
+  // Open command bar
+  openCommandBar: function() {
+    sVimCommandBar.start();
   },
 
   // Open link in current tab

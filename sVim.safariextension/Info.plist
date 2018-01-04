@@ -97,6 +97,7 @@
 				<string>mousetrap.js</string>
 				<string>sVimHelper.js</string>
 				<string>sVimHint.js</string>
+				<string>sVimCommandBar.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
@@ -113,7 +114,7 @@
 	<key>Description</key>
 	<string>Vim shortcuts in Safari</string>
 	<key>DeveloperIdentifier</key>
-	<string>6Q2K7JYUZ6</string>
+	<string>0000000000</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>

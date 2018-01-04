@@ -126,3 +126,57 @@ sVimHelper.matchLocation = function(location, pattern) {
 
   return true;
 };
+
+// Take user's input, then google it
+sVimHelper.search = function(urlOpener) {
+  sVimTab.mode = "insert";
+  var commandSpan = document.createElement('span');
+  commandSpan.innerHTML = urlOpener.name + ": ";
+  commandSpan.style.all = 'inherit';
+  commandSpan.style.position = 'relative';
+  var input = document.createElement('input');
+  input.style.all = 'inherit';
+  input.style.position = 'relative';
+  input.value = '';
+  sVimTab.commandDiv.innerHTML = '';
+  sVimTab.commandDiv.appendChild(commandSpan);
+  sVimTab.commandDiv.appendChild(input);
+
+  input.onkeypress = function(e){
+    if (!e) e = window.event;
+    var keyCode = e.keyCode || e.which;
+    if (keyCode == '13'){
+      // Enter pressed
+      evaluate(input.value)
+      close();
+      return;
+    }
+    if (keyCode == '27'){
+      // Esc pressed
+      close();
+      return;
+    }
+    // close command bar when input is empty
+    //if (input.value == '') {
+    //  close();
+    //  return;
+    //}
+  };
+
+  sVimTab.commandDiv.style.display = "block";
+  input.focus();
+
+  // Evaluate user command
+  function evaluate(c) {
+    var googleSearch = "https://www.google.com/search?q="
+    var url = googleSearch + escape(c)
+    urlOpener(url);
+  };
+
+  // close command bar
+  function close() {
+    sVimTab.mode = "normal";
+    sVimTab.commandDiv.innerHTML = "-- NORMAL --";
+    sVimTab.commandDiv.style.display = "none";
+  };
+};

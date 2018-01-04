@@ -234,6 +234,12 @@
           newTab.url = url;
         },
 
+        // Open url in active tab
+        openUrl: function(url) {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          tab.url = url;
+        },
+
         // Show tab of given url or open new tab with url
         showUrl: function(url) {
           if (typeof url !== "undefined") {
