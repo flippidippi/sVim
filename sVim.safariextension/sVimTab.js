@@ -203,20 +203,19 @@ sVimTab.commands = {
     safari.self.tab.dispatchMessage("newTabBackground", url);
   },
 
-  // Open input, then search in new tab
+  // Search in new tab
   searchInNewTab: function() {
-    var newTab = function(url){
+    // Function name is used to display info
+    sVimHelper.search(function newTab(url){
       safari.self.tab.dispatchMessage("newTab", url);
-    };
-    sVimHelper.search(newTab);
+    });
   },
 
-  // Open input, then search in current tab
+  // Search in current tab
   searchInTab: function() {
-    var open = function(url){
-      safari.self.tab.dispatchMessage("openUrl", url);      
-    };
-    sVimHelper.search(open);
+    sVimHelper.search(function open(url){
+      safari.self.tab.dispatchMessage("openUrl", url);
+    });
   },
 
   // Go back in history
@@ -301,11 +300,6 @@ sVimTab.commands = {
     sVimTab.mode = "insert";
     sVimTab.commandDiv.innerHTML = "-- INSERT --";
     sVimTab.commandDiv.style.display = "block";
-  },
-
-  // Open command bar
-  openCommandBar: function() {
-    sVimCommandBar.start();
   },
 
   // Open link in current tab

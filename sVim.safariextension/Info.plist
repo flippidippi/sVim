@@ -97,7 +97,6 @@
 				<string>mousetrap.js</string>
 				<string>sVimHelper.js</string>
 				<string>sVimHint.js</string>
-				<string>sVimCommandBar.js</string>
 			</array>
 		</dict>
 		<key>Stylesheets</key>
