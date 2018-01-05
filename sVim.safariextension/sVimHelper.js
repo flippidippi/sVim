@@ -169,7 +169,7 @@ sVimHelper.search = function(urlOpener) {
   // Evaluate user command
   function evaluate(c) {
     var googleSearch = "https://www.google.com/search?q="
-    var url = googleSearch + escape(c)
+    var url = googleSearch + encodeURI(c)
     urlOpener(url);
   };
 
