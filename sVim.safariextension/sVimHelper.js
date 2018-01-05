@@ -134,6 +134,10 @@ sVimHelper.search = function(urlOpener) {
   commandSpan.innerHTML = urlOpener.name + ": ";
   var input = document.createElement('input');
   input.value = '';
+  input.setAttribute("autocomplete", "off");
+  input.setAttribute("autocorrect", "off");
+  input.setAttribute("autocapitalize", "off");
+  input.setAttribute("spellcheck", "false");
   sVimTab.commandDiv.innerHTML = '';
   sVimTab.commandDiv.appendChild(commandSpan);
   sVimTab.commandDiv.appendChild(input);
