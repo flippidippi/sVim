@@ -183,6 +183,10 @@ sVimTab.commands = {
     safari.self.tab.dispatchMessage("closeTabsToRight");
   },
 
+  closeOtherTabs: function() {
+    safari.self.tab.dispatchMessage("closeOtherTabs");
+  },
+
   // Open the last closed tab
   lastClosedTab: function() {
     safari.self.tab.dispatchMessage("lastClosedTab");

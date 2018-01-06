@@ -182,6 +182,20 @@
           }
         },
 
+        // Close other tabs
+        closeOtherTabs: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          var tabIndex = tabs.indexOf(tab);
+
+          for (var j = 0; j < tabs.length; j++) {
+            if(j != tabIndex) {
+              tabs[j].close();
+            }
+          }
+        },
+
+
         // Close all tabs to the right of the current tab
         closeTabsToRight: function() {
           var tab = safari.application.activeBrowserWindow.activeTab;
@@ -391,6 +405,7 @@
           "g x t"         : "closeTabRight",
           "g x 0"         : "closeTabsToLeft",
           "g x $"         : "closeTabsToRight",
+          "g x o"         : "closeOtherTabs",
           "shift+x"       : "lastClosedTab",
           "ctrl+shift+x"  : "lastClosedTabBackground",
           // "t"             : "newTab",
