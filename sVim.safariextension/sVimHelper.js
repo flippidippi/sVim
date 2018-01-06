@@ -138,6 +138,10 @@ sVimHelper.search = function(urlOpener) {
   input.setAttribute("autocorrect", "off");
   input.setAttribute("autocapitalize", "off");
   input.setAttribute("spellcheck", "false");
+  /* Safari reader mode support vim like navigation.
+   * Here we trap keydown event to avoid the reader scroll when input j/k/d/u.
+   */
+  input.onkeydown = function(e){ e.stopPropagation(); };
   sVimTab.commandDiv.innerHTML = '';
   sVimTab.commandDiv.appendChild(commandSpan);
   sVimTab.commandDiv.appendChild(input);
