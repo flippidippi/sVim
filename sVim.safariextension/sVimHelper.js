@@ -172,8 +172,16 @@ sVimHelper.search = function(urlOpener) {
 
   // Evaluate user command
   function evaluate(c) {
-    var googleSearch = "https://www.google.com/search?q="
-    var url = googleSearch + encodeURI(c)
+    var searchEngine = {
+      "google": "https://www.google.com/search?q=",
+      "duckduckgo": "https://duckduckgo.com/?q=",
+      "baidu": "http://www.baidu.com/s?wd=",
+      "bing": "https://www.bing.com/search?q=",
+      "yahoo": "https://search.yahoo.com/search?p=",
+      "sogou": "https://www.sogou.com/web?query="
+    };
+    var searchQuery = searchEngine[sVimTab.settings.searchengine];
+    var url = searchQuery + encodeURI(c)
     urlOpener(url);
   };
 
