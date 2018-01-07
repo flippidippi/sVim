@@ -180,7 +180,7 @@ sVimHelper.search = function(urlOpener) {
       "yahoo": "https://search.yahoo.com/search?p=",
       "sogou": "https://www.sogou.com/web?query="
     };
-    var searchQuery = searchEngine[sVimTab.settings.searchengine];
+    var searchQuery = searchEngine[sVimTab.settings.searchengine] || searchEngine["google"];
     var url = searchQuery + encodeURI(c)
     urlOpener(url);
   };
