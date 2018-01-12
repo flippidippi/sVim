@@ -126,3 +126,64 @@ sVimHelper.matchLocation = function(location, pattern) {
 
   return true;
 };
+
+// Take user's input, then google it
+sVimHelper.search = function(urlOpener) {
+  sVimTab.mode = "insert";
+  var commandSpan = document.createElement('span');
+  commandSpan.innerHTML = urlOpener.name + ": ";
+  var input = document.createElement('input');
+  input.value = '';
+  input.setAttribute("autocomplete", "off");
+  input.setAttribute("autocorrect", "off");
+  input.setAttribute("autocapitalize", "off");
+  input.setAttribute("spellcheck", "false");
+  /* Safari reader mode support vim like navigation.
+   * Here we trap keydown event to avoid the reader scroll when input j/k/d/u.
+   */
+  input.onkeydown = function(e){ e.stopPropagation(); };
+  sVimTab.commandDiv.innerHTML = '';
+  sVimTab.commandDiv.appendChild(commandSpan);
+  sVimTab.commandDiv.appendChild(input);
+
+  input.onkeypress = function(e){
+    if (!e) e = window.event;
+    var keyCode = e.keyCode || e.which;
+    if (keyCode == '13'){
+      // Enter pressed
+      evaluate(input.value)
+      close();
+      return;
+    }
+    if (keyCode == '27'){
+      // Esc pressed
+      close();
+      return;
+    }
+  };
+
+  sVimTab.commandDiv.style.display = "block";
+  input.focus();
+
+  // Evaluate user command
+  function evaluate(c) {
+    var searchEngine = {
+      "google": "https://www.google.com/search?q=",
+      "duckduckgo": "https://duckduckgo.com/?q=",
+      "baidu": "http://www.baidu.com/s?wd=",
+      "bing": "https://www.bing.com/search?q=",
+      "yahoo": "https://search.yahoo.com/search?p=",
+      "sogou": "https://www.sogou.com/web?query="
+    };
+    var searchQuery = searchEngine[sVimTab.settings.searchengine] || searchEngine["google"];
+    var url = searchQuery + encodeURI(c)
+    urlOpener(url);
+  };
+
+  // close command bar
+  function close() {
+    sVimTab.mode = "normal";
+    sVimTab.commandDiv.innerHTML = "-- NORMAL --";
+    sVimTab.commandDiv.style.display = "none";
+  };
+};

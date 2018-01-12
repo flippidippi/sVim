@@ -68,6 +68,9 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | **Link Hints**         |                                                |                         |
 | "f"                    | open link in current tab                       | createHint              |
 | "shift+f"              | open link in new background tab                | createTabbedHint        |
+| **Search**         |                                                |                         |
+| "o"                    | search in current tab                          | searchInTab             |
+| "shift+t"              | search in new tab                              | searchInNewTab          |
 
 ## sVimrc
 - The sVimrc page is where you can customize sVim settings and css.
@@ -122,6 +125,7 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | mapleader             | <Leader> key                                                                                | string  | "\"               |
 | newtaburl             | url to use as the default new tab url                                                       | string  | "topsites://"     |
 | blacklists            | disable sVim on the sites matching one of the patterns                                      | array   | []                |
+| searchengine          | the search engine, choose in [google, duckduckgo, yahoo, bing, baidu, sogou]                | string   | "google"          |
 
 ### sVimrc Example
 ```viml

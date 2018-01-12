@@ -182,6 +182,20 @@
           }
         },
 
+        // Close other tabs
+        closeOtherTabs: function() {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          var tabs = safari.application.activeBrowserWindow.tabs;
+          var tabIndex = tabs.indexOf(tab);
+
+          for (var j = 0; j < tabs.length; j++) {
+            if(j != tabIndex) {
+              tabs[j].close();
+            }
+          }
+        },
+
+
         // Close all tabs to the right of the current tab
         closeTabsToRight: function() {
           var tab = safari.application.activeBrowserWindow.activeTab;
@@ -232,6 +246,12 @@
 
           var newTab = safari.application.activeBrowserWindow.openTab("background", tabs.indexOf(tab) + 1);
           newTab.url = url;
+        },
+
+        // Open url in active tab
+        openUrl: function(url) {
+          var tab = safari.application.activeBrowserWindow.activeTab;
+          tab.url = url;
         },
 
         // Show tab of given url or open new tab with url
@@ -346,6 +366,7 @@
         sVimGlobal.settings.mapleader             = "\\";
         sVimGlobal.settings.newtaburl             = "topsites://";
         sVimGlobal.settings.blacklists            = [];
+        sVimGlobal.settings.searchengine          = "google";
 
         // Load default shortcuts (private setting)
         sVimGlobal.settings.shortcuts = {
@@ -385,6 +406,7 @@
           "g x t"         : "closeTabRight",
           "g x 0"         : "closeTabsToLeft",
           "g x $"         : "closeTabsToRight",
+          "g x o"         : "closeOtherTabs",
           "shift+x"       : "lastClosedTab",
           "ctrl+shift+x"  : "lastClosedTabBackground",
           "t"             : "newTab",
@@ -407,7 +429,10 @@
           // Link Hints
           "f"             : "createHint",
           "shift+f"       : "createTabbedHint",
-          //FIXX "ctrl+shift+f"  : "createActiveTabbedHint"
+          //FIXX "ctrl+shift+f"  : "createActiveTabbedHint",
+          // Search
+          "shift+t"       : "searchInNewTab",
+          "o"             : "searchInTab"
         };
 
         // Other private settings

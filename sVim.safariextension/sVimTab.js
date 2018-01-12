@@ -183,6 +183,10 @@ sVimTab.commands = {
     safari.self.tab.dispatchMessage("closeTabsToRight");
   },
 
+  closeOtherTabs: function() {
+    safari.self.tab.dispatchMessage("closeOtherTabs");
+  },
+
   // Open the last closed tab
   lastClosedTab: function() {
     safari.self.tab.dispatchMessage("lastClosedTab");
@@ -201,6 +205,21 @@ sVimTab.commands = {
   // Open new tab in background
   newTabBackground: function(url) {
     safari.self.tab.dispatchMessage("newTabBackground", url);
+  },
+
+  // Search in new tab
+  searchInNewTab: function() {
+    // Function name is used to display info
+    sVimHelper.search(function newTab(url){
+      safari.self.tab.dispatchMessage("newTab", url);
+    });
+  },
+
+  // Search in current tab
+  searchInTab: function() {
+    sVimHelper.search(function open(url){
+      safari.self.tab.dispatchMessage("openUrl", url);
+    });
   },
 
   // Go back in history
