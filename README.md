@@ -122,6 +122,7 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | mapleader             | <Leader> key                                                                                | string  | "\"               |
 | newtaburl             | url to use as the default new tab url                                                       | string  | "topsites://"     |
 | blacklists            | disable sVim on the sites matching one of the patterns                                      | array   | []                |
+| searchengine          | the search engine, choose in [google, duckduckgo, yahoo, bing, baidu, sogou]                | string   | "google"          |
 
 ### sVimrc Example
 ```viml
