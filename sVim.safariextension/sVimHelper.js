@@ -160,11 +160,6 @@ sVimHelper.search = function(urlOpener) {
       close();
       return;
     }
-    // close command bar when input is empty
-    //if (input.value == '') {
-    //  close();
-    //  return;
-    //}
   };
 
   sVimTab.commandDiv.style.display = "block";

@@ -68,6 +68,9 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | **Link Hints**         |                                                |                         |
 | "f"                    | open link in current tab                       | createHint              |
 | "shift+f"              | open link in new background tab                | createTabbedHint        |
+| **Search**         |                                                |                         |
+| "o"                    | search in current tab                          | searchInTab             |
+| "shift+t"              | search in new tab                              | searchInNewTab          |
 
 ## sVimrc
 - The sVimrc page is where you can customize sVim settings and css.
