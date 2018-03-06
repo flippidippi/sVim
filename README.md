@@ -68,6 +68,8 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | **Link Hints**         |                                                |                         |
 | "f"                    | open link in current tab                       | createHint              |
 | "shift+f"              | open link in new background tab                | createTabbedHint        |
+| "ctrl+shift+f"         | open link in new foreground tab                | createForegroundHint    |
+| **Clipboard**          |                                                |                         |
 | "y y"                  | copy current URL to clipboard                  | yankDocumentUrl         |
 
 ## sVimrc

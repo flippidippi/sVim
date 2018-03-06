@@ -214,8 +214,8 @@ sVimHint.start = function(newTab) {
       resetInput();
       removeHints();
       lastElement.focus();
-      if (!newTab && /https?:\/\//.test(lastElement.href)) {
-        sVimTab.commands.newTabBackground(lastElement.href);
+      if (newTab && /https?:\/\//.test(lastElement.href)) {
+        newTab(lastElement.href);
       }
       else {
         fireEvent(lastElement, 'click');

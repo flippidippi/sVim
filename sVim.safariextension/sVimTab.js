@@ -293,12 +293,23 @@ sVimTab.commands = {
 
   // Open link in current tab
   createHint: function() {
-    sVimHint.start(true);
+    sVimHint.start();
   },
 
   // Open link in new background tab
   createTabbedHint: function() {
-    sVimHint.start(false);
+    var openUrl = function(url) {
+      safari.self.tab.dispatchMessage("newTabBackground", url);
+    };
+    sVimHint.start(openUrl);
+  },
+
+  // Open link in new foreground tab
+  createForegroundHint: function() {
+    var openUrl = function(url) {
+      safari.self.tab.dispatchMessage("newTab", url);
+    };
+    sVimHint.start(openUrl);
   },
 
   // Copy current URL to clipboard
