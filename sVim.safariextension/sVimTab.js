@@ -299,6 +299,12 @@ sVimTab.commands = {
   // Open link in new background tab
   createTabbedHint: function() {
     sVimHint.start(false);
+  },
+
+  // Copy current URL to clipboard
+  yankDocumentUrl: function() {
+    var text = window.location.href;
+    sVimHelper.copyToClipboard(text);
   }
 };
 
