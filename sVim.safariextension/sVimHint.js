@@ -4,7 +4,7 @@ var sVimHint = {};
 // Start hint
 sVimHint.start = function(newTab) {
   var hintKeys = new String(sVimTab.settings.hintcharacters).toUpperCase();
-  var xpath = "//a|//input[not(@type=\x22hidden\x22)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]|//summary";
+  var xpath = "//a|//input[not(@type=\x22hidden\x22) and not(@disabled)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]|//summary";
   var keyMap = {"8": "Bkspc", "46": "Delete", "32": "Space", "13":"Enter", "16": "Shift", "17": "Ctrl", "18": "Alt"};
 
   var hintKeysLength;
