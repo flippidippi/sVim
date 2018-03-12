@@ -421,16 +421,8 @@ sVimTab.checkBlacklist = function() {
   return false;
 };
 
-function inIframe() {
-  try{
-    return window.self !== window.top;
-  }catch(e) {
-    return true;
-  }
-}
-
 // Init sVimTab
-if(!inIframe()){
+if(!sVimHelper.inIframe()){
   safari.self.tab.dispatchMessage("sendSettings");
 }
 

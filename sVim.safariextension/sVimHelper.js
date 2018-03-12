@@ -136,3 +136,11 @@ sVimHelper.copyToClipboard = function(text) {
   document.execCommand('copy');
   document.body.removeChild(input);
 };
+
+sVimHelper.inIframe = function () {
+  try{
+    return window.self !== window.top;
+  }catch(e) {
+    return true;
+  }
+}
