@@ -421,8 +421,18 @@ sVimTab.checkBlacklist = function() {
   return false;
 };
 
+function inIframe() {
+  try{
+    return window.self !== window.top;
+  }catch(e) {
+    return true;
+  }
+}
+
 // Init sVimTab
-safari.self.tab.dispatchMessage("sendSettings");
+if(!inIframe()){
+  safari.self.tab.dispatchMessage("sendSettings");
+}
 
 // Catch commands from global
 safari.self.addEventListener("message", function(event) {
