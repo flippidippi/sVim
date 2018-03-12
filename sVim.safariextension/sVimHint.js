@@ -12,14 +12,15 @@ sVimHint.start = function(newTab) {
   var hintElements = {};
   var inputKey = "";
   var lastMatchHint = null;
-  var k=0;
   var hintStrings = [];
-  var elemCount = 0;
 
-  function getAbsolutePosition( elem, html, body, inWidth, inHeight ){
+  function getAbsolutePosition(elem, html, body, inWidth, inHeight){
     var style = getComputedStyle(elem,null);
     if(style.visibility === "hidden" || style.opacity === "0" ) return false;
     //var rect = rectFixForOpera( elem, getComputedStyle(elem,null)) || elem.getClientRects()[0];
+    if(sVimHelper.inIframe()) {
+      var stop = true
+    }
     var rect = elem.getClientRects()[0];
     if( rect && rect.right - rect.left >=0 && rect.left >= 0 && rect.top >= -5 && rect.bottom <= inHeight + 5 && rect.right <= inWidth ){
       return {
@@ -52,7 +53,7 @@ sVimHint.start = function(newTab) {
     return hintString.join("");
   }
 
-  function buildHintStrings()
+  function buildHintStrings(elemCount)
   {
     var digitsNeeded = Math.ceil(Math.log(elemCount+1) / Math.log(hintKeysLength));
     var shortHintCount = Math.floor((Math.pow(hintKeysLength, digitsNeeded) - elemCount) / hintKeysLength);
@@ -87,9 +88,9 @@ sVimHint.start = function(newTab) {
     return result;
   }
 
-  function createText(num){
+  function createText(num, elemCount){
     if (hintStrings.length == 0) {
-      buildHintStrings();
+      buildHintStrings(elemCount);
     }
     return hintStrings[num];
   }
@@ -103,26 +104,23 @@ sVimHint.start = function(newTab) {
     return arr;
   }
 
-  function countElements(win)
-  {
+  function getElemPositions(win) {
     var html = win.document.documentElement;
     var body = win.document.body;
     var inWidth = win.innerWidth;
     var inHeight = win.innerHeight
+
     var elems = getXPathElements(win);
-    elems.forEach(function(elem) {
+    var elemPositions = [];
+    elems.forEach(function(elem){
       var pos = getAbsolutePosition(elem, html, body, inWidth, inHeight );
       if( pos == false ) return;
-      elemCount++;
-    });
+      elemPositions.push({"elem":elem, "pos":pos});
+    }, this);
+    return elemPositions;
   }
 
   function start(win){
-    var html = win.document.documentElement;
-    var body = win.document.body;
-    var inWidth = win.innerWidth;
-    var inHeight = win.innerHeight
-
     var df = document.createDocumentFragment();
     var div = df.appendChild(document.createElement("div"));
     div.id = hintContainerId;
@@ -133,11 +131,13 @@ sVimHint.start = function(newTab) {
       "margin": "0px"
     };
 
-    var elems = getXPathElements(win);
-    elems.forEach(function(elem){
-      var pos = getAbsolutePosition(elem, html, body, inWidth, inHeight );
-      if( pos == false ) return;
-      var hint = createText(k);
+    var elemPositions = getElemPositions(win);
+    var k = 0;
+    var elemCount = elemPositions.length;
+    elemPositions.forEach(function(elemPosition){
+      var elem = elemPosition.elem;
+      var pos = elemPosition.pos;
+      var hint = createText(k, elemCount);
       var span = win.document.createElement("span");
       span.appendChild(document.createTextNode(hint));
       span.className = "sVim-hint";
@@ -148,8 +148,8 @@ sVimHint.start = function(newTab) {
       if (elem.hasAttribute("href") !== true) {
         span.classList.add("sVim-hint-form");
       }
-      st.left = Math.max(0,pos.left-8) + "px";
-      st.top = Math.max(0,pos.top-8) + "px";
+      st.left = Math.max(0,pos.left-4) + "px";
+      st.top = Math.max(0,pos.top-4) + "px";
       hintElements[hint] = span;
       span.element = elem;
       div.appendChild(span);
@@ -269,15 +269,8 @@ sVimHint.start = function(newTab) {
 
     var frame = window.frames;
     if(!document.getElementsByTagName("frameset")[0]){
-      countElements(window);
       start(window);
     }else{
-      Array.prototype.forEach.call(frame, function(elem){
-        try{
-          countElements(window);
-        }catch(e){
-        }
-      },this);
       Array.prototype.forEach.call(frame, function(elem){
         try{
           start(elem);
