@@ -4,7 +4,7 @@ var sVimHint = {};
 // Start hint
 sVimHint.start = function(newTab) {
   var hintKeys = new String(sVimTab.settings.hintcharacters).toUpperCase();
-  var xpath = "//a|//input[not(@type=\x22hidden\x22 or @disabled)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]|//summary";
+  var xpath = "//a|//input[not(@type=\x22hidden\x22 or @disabled)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]|//summary|//iframe";
   var keyMap = {"8": "Bkspc", "46": "Delete", "32": "Space", "13":"Enter", "16": "Shift", "17": "Ctrl", "18": "Alt"};
 
   var hintKeysLength;
@@ -22,7 +22,7 @@ sVimHint.start = function(newTab) {
       var stop = true
     }
     var rect = elem.getClientRects()[0];
-    if( rect && rect.right - rect.left >=0 && rect.left >= 0 && rect.top >= -5 && rect.bottom <= inHeight + 5 && rect.right <= inWidth ){
+    if( rect && rect.right - rect.left >=0 && rect.left >= 0 && rect.top >= -5 && rect.top <= inHeight + 5 && rect.left <= inWidth ){
       return {
         top: (body.scrollTop || html.scrollTop) - html.clientTop + rect.top,
         left: (body.scrollLeft || html.scrollLeft ) - html.clientLeft + rect.left
@@ -235,15 +235,16 @@ sVimHint.start = function(newTab) {
   }
 
   function removeHints(){
-    var frame = top.frames;
+    var frame = window.frames;
     if( !document.getElementsByTagName("frameset")[0]){
-      end(top);
+      end(window);
+    }else {
+      Array.prototype.forEach.call(frame, function(elem){
+        try{
+          end(elem);
+        }catch(e){ }
+      }, this);
     }
-    Array.prototype.forEach.call(frame, function(elem){
-      try{
-        end(elem);
-      }catch(e){ }
-    }, this);
   }
 
   function resetInput(){

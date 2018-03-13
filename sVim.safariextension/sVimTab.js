@@ -275,6 +275,7 @@ sVimTab.commands = {
 
   // Enter normal mode
   normalMode: function() {
+    var previousMode = sVimTab.mode
     var element = document.activeElement;
     if (element != null) {
       element.blur();
@@ -282,6 +283,9 @@ sVimTab.commands = {
     sVimTab.mode = "normal";
     sVimTab.commandDiv.innerHTML = "-- NORMAL --";
     sVimTab.commandDiv.style.display = "none";
+    if(previousMode == "normal" && sVimHelper.inIframe()){
+      window.top.focus();
+    }
   },
 
   // Enter insert mode
@@ -422,9 +426,7 @@ sVimTab.checkBlacklist = function() {
 };
 
 // Init sVimTab
-if(!sVimHelper.inIframe()){
-  safari.self.tab.dispatchMessage("sendSettings");
-}
+safari.self.tab.dispatchMessage("sendSettings");
 
 // Catch commands from global
 safari.self.addEventListener("message", function(event) {
