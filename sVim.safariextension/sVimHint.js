@@ -19,7 +19,7 @@ sVimHint.start = function(newTab) {
     if(style.visibility === "hidden" || style.opacity === "0" ) return false;
     //var rect = rectFixForOpera( elem, getComputedStyle(elem,null)) || elem.getClientRects()[0];
     var rect = elem.getBoundingClientRect();
-    if( rect && rect.right - rect.left >=0 && rect.left >= 0 && rect.top >= -5 && rect.top <= inHeight + 5 && rect.left <= inWidth ){
+    if( rect && rect.right - rect.left >0 && rect.bottom-rect.top>0 && rect.left >= 0 && rect.top >= -5 && rect.top <= inHeight + 5 && rect.left <= inWidth ){
       return {
         top: (body.scrollTop || html.scrollTop) - html.clientTop + rect.top,
         left: (body.scrollLeft || html.scrollLeft ) - html.clientLeft + rect.left
