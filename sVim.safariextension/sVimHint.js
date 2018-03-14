@@ -4,7 +4,7 @@ var sVimHint = {};
 // Start hint
 sVimHint.start = function(newTab) {
   var hintKeys = new String(sVimTab.settings.hintcharacters).toUpperCase();
-  var xpath = "//a|//input[not(@type=\x22hidden\x22 or @disabled)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]|//summary|//iframe";
+  var xpath = "//a|//input[not(@type=\x22hidden\x22 or @disabled)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]|//summary|//iframe|//svg:a";
   var keyMap = {"8": "Bkspc", "46": "Delete", "32": "Space", "13":"Enter", "16": "Shift", "17": "Ctrl", "18": "Alt"};
 
   var hintKeysLength;
@@ -18,10 +18,7 @@ sVimHint.start = function(newTab) {
     var style = getComputedStyle(elem,null);
     if(style.visibility === "hidden" || style.opacity === "0" ) return false;
     //var rect = rectFixForOpera( elem, getComputedStyle(elem,null)) || elem.getClientRects()[0];
-    if(sVimHelper.inIframe()) {
-      var stop = true
-    }
-    var rect = elem.getClientRects()[0];
+    var rect = elem.getBoundingClientRect();
     if( rect && rect.right - rect.left >=0 && rect.left >= 0 && rect.top >= -5 && rect.top <= inHeight + 5 && rect.left <= inWidth ){
       return {
         top: (body.scrollTop || html.scrollTop) - html.clientTop + rect.top,
@@ -96,8 +93,11 @@ sVimHint.start = function(newTab) {
   }
 
   function getXPathElements(win){
-    function resolv(p){ if (p == "xhtml") return "http://www.w3.org/1999/xhtml"; }
-      var result = win.document.evaluate(xpath, win.document, resolv, 7, null);
+    function resolv(p){
+      if (p == "xhtml") return "http://www.w3.org/1999/xhtml";
+      if (p == "svg") return "http://www.w3.org/2000/svg";
+    }
+    var result = win.document.evaluate(xpath, win.document, resolv, 7, null);
     for (var i = 0, arr = [], len = result.snapshotLength; i < len; i++){
       arr[i] = result.snapshotItem(i);
     }
