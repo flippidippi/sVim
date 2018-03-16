@@ -4,7 +4,37 @@ var sVimHint = {};
 // Start hint
 sVimHint.start = function(newTab) {
   var hintKeys = new String(sVimTab.settings.hintcharacters).toUpperCase();
-  var xpath = "//a|//input[not(@type=\x22hidden\x22 or @disabled)]|//textarea|//select|//img[@onclick]|//button|//div[@role=\x22button\x22]|//summary|//iframe|//svg:a";
+  /**Given a HTML element, we use following criteria to decide if to generate
+   * hint for it.
+   * 1. we check if it has invalid style. If so, return false.
+   * 2. we check if it has invalid attributes. If so, return false.
+   * 3. we check if it is the tag we want. If so, return true.
+   * 4. we check if it has some style we want. If so, return true.
+   * 5. return false.
+   */
+  var invalidStyle = {
+    'display': 'none',
+    'visibility': 'hidden'
+  }
+  var invalidAttr = {
+    'type': 'hidden',
+    'hidden': true,
+    'disabled': true
+  };
+  var validTagNames = {
+    'a': true,
+    'input': true,
+    'textarea': true,
+    'select': true,
+    'img':{'onclick':true},
+    'button': true,
+    'div': {'role':'button'},
+    'summary': true,
+    'iframe': true
+  };
+  var validStyle = {
+    'cursor': 'pointer'
+  }
   var keyMap = {"8": "Bkspc", "46": "Delete", "32": "Space", "13":"Enter", "16": "Shift", "17": "Ctrl", "18": "Alt"};
 
   var hintKeysLength;
@@ -17,9 +47,9 @@ sVimHint.start = function(newTab) {
   function getAbsolutePosition(elem, html, body, inWidth, inHeight){
     var style = getComputedStyle(elem,null);
     if(style.visibility === "hidden" || style.opacity === "0" ) return false;
-    //var rect = rectFixForOpera( elem, getComputedStyle(elem,null)) || elem.getClientRects()[0];
     var rect = elem.getBoundingClientRect();
-    if( rect && rect.right - rect.left >0 && rect.bottom-rect.top>0 && rect.left >= 0 && rect.top >= -5 && rect.top <= inHeight + 5 && rect.left <= inWidth ){
+    // Check if the element is visible on the view.
+    if( rect && (rect.top+rect.bottom+rect.left+rect.right >0) && rect.right - rect.left >= 0 && rect.bottom-rect.top>=0 && rect.left >= 0 && rect.top >= -5 && rect.top <= inHeight + 5 && rect.left <= inWidth ){
       return {
         top: (body.scrollTop || html.scrollTop) - html.clientTop + rect.top,
         left: (body.scrollLeft || html.scrollLeft ) - html.clientLeft + rect.left
@@ -92,16 +122,52 @@ sVimHint.start = function(newTab) {
     return hintStrings[num];
   }
 
-  function getXPathElements(win){
-    function resolv(p){
-      if (p == "xhtml") return "http://www.w3.org/1999/xhtml";
-      if (p == "svg") return "http://www.w3.org/2000/svg";
+  // A Depth First Search to iterate through all HTML elements from body. We
+  // ignore the its children when we find an element meeting our criteria. In
+  // this way, we avoid generating duplicated hints.
+  function getValidElements(win) {
+    var body = win.document.body
+    var toProcess = [body];
+    var result = [];
+    while (toProcess.length > 0){
+      var elem = toProcess.pop();
+      if(isValidStyle(elem) && isValidAttr(elem)){
+        if(isValidTag(elem)) result.push(elem);
+        else {
+          var children = elem.children;
+          for(i=0;i<children.length;i++){
+            toProcess.push(children[i]);
+          }
+        }
+      }
     }
-    var result = win.document.evaluate(xpath, win.document, resolv, 7, null);
-    for (var i = 0, arr = [], len = result.snapshotLength; i < len; i++){
-      arr[i] = result.snapshotItem(i);
+    return result;
+  }
+  function isValidStyle(elem){
+    for(s in invalidStyle){
+      if(getComputedStyle(elem)[s] == invalidStyle[s]) return false;
     }
-    return arr;
+    return true;
+  }
+  function isValidAttr(elem){
+    for(attr in invalidAttr){
+      if(elem.getAttribute(attr) == invalidAttr[attr]) return false;
+    }
+    return true;
+  }
+  function isValidTag(elem) {
+    var tagValid = validTagNames[elem.tagName.toLowerCase()]
+    if(tagValid) {
+      for(attr in tagValid) {
+        if(elem.getAttribute(attr) != tagValid[attr]) return false;
+      }
+      return true;
+    } else {
+      for(s in validStyle) {
+        if(getComputedStyle(elem)[s] == validStyle[s]) return true;
+      }
+      return false;
+    }
   }
 
   function getElemPositions(win) {
@@ -110,7 +176,7 @@ sVimHint.start = function(newTab) {
     var inWidth = win.innerWidth;
     var inHeight = win.innerHeight
 
-    var elems = getXPathElements(win);
+    var elems = getValidElements(win);
     var elemPositions = [];
     elems.forEach(function(elem){
       var pos = getAbsolutePosition(elem, html, body, inWidth, inHeight );
