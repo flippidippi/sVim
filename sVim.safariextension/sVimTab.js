@@ -183,6 +183,10 @@ sVimTab.commands = {
     safari.self.tab.dispatchMessage("closeTabsToRight");
   },
 
+  closeOtherTabs: function() {
+    safari.self.tab.dispatchMessage("closeOtherTabs");
+  },
+
   // Open the last closed tab
   lastClosedTab: function() {
     safari.self.tab.dispatchMessage("lastClosedTab");
@@ -271,6 +275,7 @@ sVimTab.commands = {
 
   // Enter normal mode
   normalMode: function() {
+    var previousMode = sVimTab.mode
     var element = document.activeElement;
     if (element != null) {
       element.blur();
@@ -278,6 +283,9 @@ sVimTab.commands = {
     sVimTab.mode = "normal";
     sVimTab.commandDiv.innerHTML = "-- NORMAL --";
     sVimTab.commandDiv.style.display = "none";
+    if(previousMode == "normal" && sVimHelper.inIframe()){
+      window.top.focus();
+    }
   },
 
   // Enter insert mode
@@ -289,12 +297,29 @@ sVimTab.commands = {
 
   // Open link in current tab
   createHint: function() {
-    sVimHint.start(true);
+    sVimHint.start();
   },
 
   // Open link in new background tab
   createTabbedHint: function() {
-    sVimHint.start(false);
+    var openUrl = function(url) {
+      safari.self.tab.dispatchMessage("newTabBackground", url);
+    };
+    sVimHint.start(openUrl);
+  },
+
+  // Open link in new foreground tab
+  createForegroundHint: function() {
+    var openUrl = function(url) {
+      safari.self.tab.dispatchMessage("newTab", url);
+    };
+    sVimHint.start(openUrl);
+  },
+
+  // Copy current URL to clipboard
+  yankDocumentUrl: function() {
+    var text = window.location.href;
+    sVimHelper.copyToClipboard(text);
   }
 };
 
