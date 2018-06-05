@@ -380,7 +380,8 @@ sVimTab.bind = function() {
 sVimTab.stopPropagation = function() {
   return function(e) {
     var element = document.activeElement;
-    if (sVimTab.mode == "normal" && e.keyCode != 27 && (element != null && !sVimHelper.isElementInput(element))) {
+    var excludeKeys = [27, 38, 40, 37, 39]
+    if (sVimTab.mode == "normal" && !excludeKeys.includes(e.keyCode) && (element != null && !sVimHelper.isElementInput(element))) {
       e.stopPropagation();
     }
   };
