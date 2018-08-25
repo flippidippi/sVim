@@ -360,6 +360,8 @@
         sVimGlobal.settings.mapleader             = "\\";
         sVimGlobal.settings.newtaburl             = "topsites://";
         sVimGlobal.settings.blacklists            = [];
+        sVimGlobal.settings.nextpagetextpatterns  = ["Next"];
+        sVimGlobal.settings.prevpagetextpatterns  = ["Prev(ious)?"];
 
         // Load default shortcuts (private setting)
         sVimGlobal.settings.shortcuts = {
@@ -378,6 +380,8 @@
           "0"             : "scrollToLeft",
           "$"             : "scrollToRight",
           "g i"           : "goToInput",
+          "g n"           : "gotoNextPage",
+          "g p"           : "gotoPrevPage",
           // Miscellaneous
           "r"             : "reloadTab",
           "z i"           : "zoomPageIn",
