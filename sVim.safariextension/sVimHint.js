@@ -192,7 +192,7 @@ sVimHint.start = function(newTab) {
     div.id = hintContainerId;
 
     var spanStyle = {
-      "position" : "absolute",
+      "position" : "fixed",
       "zIndex" : "214783647",
       "margin": "0px"
     };
