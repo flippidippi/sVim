@@ -190,6 +190,7 @@ sVimHint.start = function(newTab) {
     var df = document.createDocumentFragment();
     var div = df.appendChild(document.createElement("div"));
     div.id = hintContainerId;
+    div.style.position = "static";
 
     var spanStyle = {
       "position" : "absolute",
