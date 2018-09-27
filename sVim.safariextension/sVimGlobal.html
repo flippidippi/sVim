@@ -360,8 +360,22 @@
         sVimGlobal.settings.mapleader             = "\\";
         sVimGlobal.settings.newtaburl             = "topsites://";
         sVimGlobal.settings.blacklists            = [];
-        sVimGlobal.settings.nextpagetextpatterns  = ["Next"];
+        sVimGlobal.settings.nextpagetextpatterns  = ["(Next)(\\s>)?"];
         sVimGlobal.settings.prevpagetextpatterns  = ["Prev(ious)?"];
+        sVimGlobal.settings.sitepagination        = {
+          '*://*.ebay.com/*': {
+            'next': '[aria-label="Go to next search page"]',
+            'prev': '[aria-label="Go to previous search page"]'
+          },
+          '*://mail.google.com/*': {
+            'next': '[aria-label="Newer"]',
+            'prev': '[aria-label="Older"]'
+          },
+          '*://*.reddit.com/*': {
+            'next': 'a[rel$="next"]',
+            'prev': 'a[rel$="prev"]'
+          }
+        };
 
         // Load default shortcuts (private setting)
         sVimGlobal.settings.shortcuts = {

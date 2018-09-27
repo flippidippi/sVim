@@ -327,10 +327,10 @@ sVimTab.commands = {
   clickLinkMatchingTextPatterns: function(patterns) {
     var links = document.getElementsByTagName("a");
 
-    for (i=0; i<links.length; i++) {
+    for (var i = 0; i < links.length; i++) {
       var link = links[i];
 
-      for (j=0; j<patterns.length; j++) {
+      for (var j = 0; j < patterns.length; j++) {
         var re = new RegExp('^' + patterns[j] + '$');
 
         if (re.test(link.text)) {
@@ -341,15 +341,54 @@ sVimTab.commands = {
     }
   },
 
+  findSitePaginationSelectors: function(direction) {
+    return Object.keys(sVimTab.settings.sitepagination)
+      .filter(function (key) {
+        return sVimHelper.matchLocation(document.location, key);
+      }).map(function (key) {
+        return sVimTab.settings.sitepagination[key][direction];
+      }).filter(function (value) {
+        return value
+      });
+  },
+
+  getPaginationLink: function(direction) {
+    var sitePaginationSelectors = this.findSitePaginationSelectors(direction),
+      link;
+
+    if (sitePaginationSelectors.length > 0) {
+      for (var i = 0; i < sitePaginationSelectors.length; i++) {
+        link = document.querySelector(sitePaginationSelectors[i]);
+        if (link) {
+          return link;
+        }
+      }
+    }
+  },
+
   // Click on the "next page" link on the screen if any is present
   gotoNextPage: function() {
+    var paginationLink = this.getPaginationLink('next');
+
+    if (paginationLink) {
+      paginationLink.click();
+      return;
+    }
+
     this.clickLinkMatchingTextPatterns(sVimTab.settings.nextpagetextpatterns);
   },
 
   // Click on the "previous page" link on the screen if any is present
   gotoPrevPage: function() {
+    var paginationLink = this.getPaginationLink('prev');
+
+    if (paginationLink) {
+      paginationLink.click();
+      return;
+    }
+
     this.clickLinkMatchingTextPatterns(sVimTab.settings.prevpagetextpatterns);
-  },
+  }
 };
 
 // Bind shortcuts
