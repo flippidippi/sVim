@@ -193,7 +193,7 @@ sVimHint.start = function(newTab) {
     div.style.position = "static";
 
     var spanStyle = {
-      "position" : "absolute",
+      "position" : "fixed",
       "zIndex" : "214783647",
       "margin": "0px"
     };
