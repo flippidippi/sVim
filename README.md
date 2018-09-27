@@ -28,6 +28,8 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | "0"                    | scroll to the left of the page                 | scrollToLeft            |
 | "$"                    | scroll to the right of the page                | scrollToRight           |
 | "g i"                  | go to the first input box                      | goToInput               |
+| "g n"                  | find a "next page" link and navigate to it     | gotoNextPage            |
+| "g p"                  | find a "previous page" link and navigate to it | gotoPrevPage            |
 | **Miscellaneous**      |                                                |                         |
 | "r"                    | reload the current tab                         | reloadTab               |
 | "z i"                  | zoom page in                                   | zoomPageIn              |
@@ -125,6 +127,8 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | mapleader             | <Leader> key                                                                                | string  | "\"               |
 | newtaburl             | url to use as the default new tab url                                                       | string  | "topsites://"     |
 | blacklists            | disable sVim on the sites matching one of the patterns                                      | array   | []                |
+| nextpagetextpatterns  | a list of regex patterns used to find the "next page" link on the page                      | array   | ["Next"]          |
+| prevpagetextpatterns  | a list of regex patterns used to find the "prev page" link on the page                      | array   | ["Previous"]      |
 
 ### sVimrc Example
 ```viml
@@ -141,6 +145,8 @@ let homeurl = "http://google.com";
 let mapleader = ","
 let newtaburl = "http://google.com"
 let blacklists = ["*://example.com/stuff/*", "*://mail.google.com/*"]
+let nextpagetextpatterns = ["Next"]
+let prevpagetextpatterns = ["Prev(ious)?"]
 
 " Shortcuts
 map "q" nextTab

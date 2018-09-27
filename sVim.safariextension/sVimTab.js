@@ -320,7 +320,36 @@ sVimTab.commands = {
   yankDocumentUrl: function() {
     var text = window.location.href;
     sVimHelper.copyToClipboard(text);
-  }
+  },
+
+  // Find a link with that matches one of the given text patterns (regex-s),
+  // and click on it.
+  clickLinkMatchingTextPatterns: function(patterns) {
+    var links = document.getElementsByTagName("a");
+
+    for (i=0; i<links.length; i++) {
+      var link = links[i];
+
+      for (j=0; j<patterns.length; j++) {
+        var re = new RegExp('^' + patterns[j] + '$');
+
+        if (re.test(link.text)) {
+          link.click();
+          return;
+        }
+      }
+    }
+  },
+
+  // Click on the "next page" link on the screen if any is present
+  gotoNextPage: function() {
+    this.clickLinkMatchingTextPatterns(sVimTab.settings.nextpagetextpatterns);
+  },
+
+  // Click on the "previous page" link on the screen if any is present
+  gotoPrevPage: function() {
+    this.clickLinkMatchingTextPatterns(sVimTab.settings.prevpagetextpatterns);
+  },
 };
 
 // Bind shortcuts
