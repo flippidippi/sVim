@@ -131,6 +131,10 @@ The functionality of sVim will mostly follow the Chrome extension [cVim](https:/
 | prevpagetextpatterns  | a list of regex patterns used to find the "prev page" link on the page                      | array   | ["Previous"]      |
 
 ### sVimrc Example
+
+Note: This example config works with sVim v1.0.7 and newer.
+If running an older version, remove or comment out the `nextpagetextpatterns` and `prevpagetextpatterns` lines.
+
 ```viml
 " Settings
 set nosmoothscroll
