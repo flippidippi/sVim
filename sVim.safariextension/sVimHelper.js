@@ -54,10 +54,14 @@ sVimHelper.scrollBy = function(x, y) {
 
   // Animate the scroll
   function animLoop() {
-    if (y) {
-      window.scrollBy(0, Math.round(easeOutExpo(i, 0, y, sVimTab.settings.scrollduration) - delta));
-    } else {
-      window.scrollBy(Math.round(easeOutExpo(i, 0, x, sVimTab.settings.scrollduration) - delta), 0);
+    var toScroll = Math.round(easeOutExpo(i, 0, y, sVimTab.settings.scrollduration) - delta);
+
+    if (toScroll != 0) {
+      if (y) {
+        window.scrollBy(0, toScroll);
+      } else {
+        window.scrollBy(toScroll, 0);
+      }
     }
 
     if (i < sVimTab.settings.scrollduration) {
