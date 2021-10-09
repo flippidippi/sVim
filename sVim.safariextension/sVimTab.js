@@ -495,7 +495,9 @@ sVimTab.checkBlacklist = function() {
 };
 
 // Init sVimTab
-safari.self.tab.dispatchMessage("sendSettings");
+if (window === window.top) {
+  safari.self.tab.dispatchMessage("sendSettings");
+}
 
 // Catch commands from global
 safari.self.addEventListener("message", function(event) {
