@@ -448,7 +448,7 @@ sVimTab.bind = function() {
 sVimTab.stopPropagation = function() {
   return function(e) {
     var element = document.activeElement;
-    var excludeKeys = [27, 38, 40, 37, 39]
+    var excludeKeys = [27, 32, 38, 40, 37, 39];
     if (sVimTab.mode == "normal" && !excludeKeys.includes(e.keyCode) && (element != null && !sVimHelper.isElementInput(element))) {
       e.stopPropagation();
     }
